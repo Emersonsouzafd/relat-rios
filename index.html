@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +7,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #333333;
-            --secondary-color: #444444;
-            --accent-color: #666666;
-            --text-color: #f5f5f5;
-            --highlight-color: #dddddd;
-            --edit-mode-color: rgba(46, 204, 113, 0.2);
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --text-color: #ecf0f1;
+            --text-secondary: #bdc3c7;
+            --dark-gray: #1a1a1a;
+            --medium-gray: #333;
+            --light-gray: #7f8c8d;
         }
 
         * {
@@ -25,191 +27,134 @@
         body {
             background-color: var(--primary-color);
             color: var(--text-color);
-            overflow-x: hidden;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
         .container {
-            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
             flex: 1;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 300px;
-            background-color: var(--secondary-color);
-            padding: 2rem;
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+
+        .profile {
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+            gap: 20px;
         }
 
         .profile-pic {
-            width: 150px;
-            height: 150px;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             object-fit: cover;
             border: 5px solid var(--accent-color);
-            margin-bottom: 1.5rem;
-            cursor: pointer;
-            transition: transform 0.3s;
         }
 
-        .profile-pic:hover {
-            transform: scale(1.05);
-        }
-
-        .name {
-            font-size: 1.5rem;
+        .profile-name {
+            font-size: 28px;
             font-weight: bold;
-            margin-bottom: 2rem;
             text-align: center;
-            color: var(--highlight-color);
         }
 
         .about {
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 1rem;
+            flex: 1;
+            min-width: 300px;
+            background-color: var(--secondary-color);
+            padding: 20px;
             border-radius: 10px;
-            margin-bottom: 2rem;
-            width: 100%;
-            min-height: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
-        .about-title {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            color: var(--highlight-color);
-            border-bottom: 1px solid var(--accent-color);
-            padding-bottom: 0.5rem;
+        .about h2 {
+            margin-bottom: 15px;
+            color: var(--accent-color);
         }
 
         .about-content {
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .social-links {
             display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            width: 100%;
-            margin-top: auto;
-            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
         }
 
         .social-btn {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.8rem;
-            background-color: var(--primary-color);
+            gap: 8px;
+            padding: 10px 15px;
+            background-color: var(--medium-gray);
             color: var(--text-color);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
             text-decoration: none;
-            font-weight: 500;
+            border-radius: 5px;
+            transition: all 0.3s ease;
         }
 
         .social-btn:hover {
             background-color: var(--accent-color);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
-        .social-btn i {
-            font-size: 1.2rem;
+        .projects-section {
+            margin-top: 40px;
         }
 
-        .resume-btn {
-            background-color: var(--highlight-color);
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-
-        .resume-btn:hover {
-            background-color: var(--text-color);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 2rem;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .section-title {
-            font-size: 2rem;
-            margin-bottom: 2rem;
-            color: var(--highlight-color);
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 50%;
-            height: 3px;
-            background-color: var(--accent-color);
-        }
-
-        /* Projects Section */
-        .projects-wrapper {
-            flex: 1;
-            position: relative;
+        .projects-section h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--accent-color);
         }
 
         .projects-container {
             display: flex;
-            gap: 2rem;
-            padding: 1rem 0;
+            gap: 20px;
             overflow-x: auto;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
+            padding-bottom: 20px;
             scrollbar-width: thin;
             scrollbar-color: var(--accent-color) var(--secondary-color);
-            padding-bottom: 15px;
         }
 
-        .projects-container.has-scrollbar::-webkit-scrollbar {
-            height: 12px;
+        .projects-container::-webkit-scrollbar {
+            height: 8px;
         }
 
-        .projects-container.has-scrollbar::-webkit-scrollbar-track {
+        .projects-container::-webkit-scrollbar-track {
             background: var(--secondary-color);
             border-radius: 10px;
         }
 
-        .projects-container.has-scrollbar::-webkit-scrollbar-thumb {
+        .projects-container::-webkit-scrollbar-thumb {
             background-color: var(--accent-color);
             border-radius: 10px;
-            border: 2px solid var(--secondary-color);
         }
 
         .project-card {
             min-width: 300px;
-            max-width: 300px;
             background-color: var(--secondary-color);
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s;
-            position: relative;
-            flex-shrink: 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
         }
 
         .project-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-5px);
         }
 
         .project-image {
@@ -219,299 +164,55 @@
         }
 
         .project-info {
-            padding: 1.5rem;
+            padding: 15px;
         }
 
         .project-title {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            color: var(--highlight-color);
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: var(--accent-color);
         }
 
         .project-description {
-            margin-bottom: 1rem;
-            line-height: 1.4;
-            font-size: 0.9rem;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.5;
         }
 
         .project-link {
             display: inline-block;
-            padding: 0.5rem 1rem;
+            padding: 8px 15px;
             background-color: var(--accent-color);
-            color: var(--text-color);
+            color: white;
             text-decoration: none;
             border-radius: 5px;
-            font-size: 0.9rem;
+            font-size: 14px;
             transition: background-color 0.3s;
         }
 
         .project-link:hover {
-            background-color: var(--highlight-color);
-            color: var(--primary-color);
-        }
-
-        .project-actions {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            gap: 5px;
-        }
-
-        .edit-project-btn, .delete-project-btn {
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .edit-project-btn:hover {
-            background-color: #3498db;
-        }
-
-        .delete-project-btn:hover {
-            background-color: #e74c3c;
-        }
-
-        /* Footer */
-        .footer {
-            background-color: var(--secondary-color);
-            padding: 1.5rem;
-            text-align: center;
-            margin-top: auto;
-            border-top: 1px solid var(--accent-color);
-        }
-
-        .footer-brand {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--highlight-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .footer-brand i {
-            color: var(--accent-color);
-        }
-
-        /* Edit Mode */
-        .edit-mode {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
-            display: flex;
-            gap: 10px;
-        }
-
-        .edit-btn, .projects-edit-btn {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .edit-btn:hover, .projects-edit-btn:hover {
-            background-color: #2ecc71;
-            transform: scale(1.1);
-        }
-
-        .projects-edit-btn {
-            background-color: #3498db;
-        }
-
-        .projects-edit-btn:hover {
             background-color: #2980b9;
         }
 
-        .edit-panel {
+        .edit-btn {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: var(--secondary-color);
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            display: none;
-            z-index: 99;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .edit-panel.show {
-            display: block;
-        }
-
-        .edit-field {
-            margin-bottom: 1.5rem;
-        }
-
-        .edit-field label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--highlight-color);
-        }
-
-        .edit-field input, 
-        .edit-field textarea {
-            width: 100%;
-            padding: 0.8rem;
-            border-radius: 5px;
-            border: 1px solid var(--accent-color);
-            background-color: var(--primary-color);
-            color: var(--text-color);
-        }
-
-        .edit-field textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .edit-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .save-btn, .cancel-btn {
-            padding: 0.7rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-
-        .save-btn {
-            background-color: #27ae60;
-            color: white;
-        }
-
-        .save-btn:hover {
-            background-color: #2ecc71;
-        }
-
-        .cancel-btn {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        .cancel-btn:hover {
-            background-color: #c0392b;
-        }
-
-        .edit-panel-title {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--highlight-color);
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 0.5rem;
-        }
-
-        .image-preview {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 1rem auto;
-            display: block;
-            border: 3px solid var(--accent-color);
-        }
-
-        .project-image-preview {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            margin: 1rem auto;
-            display: block;
-            border: 3px solid var(--accent-color);
-            border-radius: 5px;
-        }
-
-        .file-input-label {
-            display: block;
-            padding: 0.8rem;
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            border-radius: 5px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px dashed var(--accent-color);
-            margin-bottom: 1rem;
-        }
-
-        .file-input-label:hover {
+            bottom: 20px;
+            right: 20px;
             background-color: var(--accent-color);
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        /* Resume Management */
-        .resume-management {
-            margin-top: 1rem;
-            padding: 1rem;
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-        
-        .resume-actions {
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-        
-        .resume-action-btn {
-            padding: 0.5rem;
-            border: none;
-            border-radius: 4px;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            font-size: 0.9rem;
-        }
-        
-        .update-resume-btn {
-            background-color: #3498db;
-            color: white;
-        }
-        
-        .remove-resume-btn {
-            background-color: #e74c3c;
-            color: white;
-        }
-        
-        .resume-status {
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            color: var(--highlight-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 100;
         }
 
-        /* Password Modal */
-        .modal {
+        .password-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -520,785 +221,462 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
             z-index: 1000;
-            justify-content: center;
             align-items: center;
-        }
-
-        .modal.show {
-            display: flex;
+            justify-content: center;
         }
 
         .modal-content {
             background-color: var(--secondary-color);
-            padding: 2rem;
+            padding: 30px;
             border-radius: 10px;
-            width: 300px;
+            width: 90%;
+            max-width: 400px;
             text-align: center;
         }
 
-        .modal-title {
-            margin-bottom: 1rem;
-            color: var(--highlight-color);
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: var(--accent-color);
         }
 
-        .modal-input {
+        .password-input {
             width: 100%;
-            padding: 0.8rem;
-            margin-bottom: 1rem;
+            padding: 10px;
+            margin-bottom: 20px;
             border-radius: 5px;
-            border: 1px solid var(--accent-color);
-            background-color: var(--primary-color);
+            border: none;
+            background-color: var(--medium-gray);
             color: var(--text-color);
         }
 
-        .modal-btn {
-            padding: 0.7rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            margin: 0 0.5rem;
-            transition: all 0.3s;
-        }
-
-        .modal-btn.confirm {
-            background-color: #27ae60;
-            color: white;
-        }
-
-        .modal-btn.confirm:hover {
-            background-color: #2ecc71;
-        }
-
-        .modal-btn.cancel {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        .modal-btn.cancel:hover {
-            background-color: #c0392b;
-        }
-
-        /* Add Project Button */
-        .add-project-container {
+        .modal-buttons {
             display: flex;
+            gap: 10px;
             justify-content: center;
-            margin-bottom: 2rem;
         }
 
-        .add-project-btn {
-            padding: 0.8rem 1.5rem;
-            background-color: #27ae60;
-            color: white;
+        .modal-btn {
+            padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-            display: none;
+            transition: background-color 0.3s;
         }
 
-        .add-project-btn.show {
-            display: block;
+        .confirm-btn {
+            background-color: var(--accent-color);
+            color: white;
         }
 
-        .add-project-btn:hover {
-            background-color: #2ecc71;
+        .cancel-btn {
+            background-color: var(--medium-gray);
+            color: var(--text-color);
         }
 
-        /* Responsive */
+        .edit-mode .editable {
+            border: 1px dashed rgba(255, 255, 255, 0.5);
+            padding: 5px;
+            margin: -5px;
+            border-radius: 3px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--secondary-color);
+            margin-top: 40px;
+        }
+
         @media (max-width: 768px) {
-            .container {
+            header {
                 flex-direction: column;
+                align-items: center;
+                text-align: center;
             }
-            
-            .sidebar {
-                width: 100%;
-                padding: 1.5rem;
+
+            .about {
+                text-align: center;
             }
-            
-            .main-content {
-                padding: 1.5rem;
-            }
-            
-            .projects-container {
-                flex-direction: column;
-                overflow-x: visible;
-            }
-            
-            .project-card {
-                max-width: 100%;
-            }
-            
-            .edit-panel {
-                width: 95%;
-                padding: 1.5rem;
-            }
-            
-            .edit-mode {
-                flex-direction: column;
-                bottom: 80px;
-                right: 20px;
+
+            .social-links {
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <img src="https://via.placeholder.com/150" alt="Foto de Perfil" class="profile-pic" id="profile-pic">
-            <h1 class="name">EMERSON FLORES DE SOUZA</h1>
-            
-            <div class="about" id="about-section">
-                <h3 class="about-title">SOBRE</h3>
-                <p class="about-content" id="about-content">
-                    Profissional dedicado e apaixonado por tecnologia. Com experiência em desenvolvimento web e soluções inovadoras, sempre buscando aprender e compartilhar conhecimento.
-                </p>
+        <header>
+            <div class="profile">
+                <img id="profileImage" src="https://via.placeholder.com/200" alt="Foto de Emerson Flores de Souza" class="profile-pic">
+                <h1 id="profileName" class="profile-name editable">EMERSON FLORES DE SOUZA</h1>
             </div>
-            
-            <div class="social-links">
-                <a href="#" class="social-btn" id="linkedin-btn">
-                    <i class="fab fa-linkedin"></i> LinkedIn
-                </a>
-                <a href="#" class="social-btn" id="github-btn">
-                    <i class="fab fa-github"></i> GitHub
-                </a>
-                <a href="#" class="social-btn" id="whatsapp-btn">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
-                </a>
-                <a href="#" class="social-btn resume-btn" id="resume-btn">
-                    <i class="fas fa-file-pdf"></i> Baixar Currículo
-                </a>
-            </div>
-        </div>
-        
-        <!-- Main Content -->
-        <div class="main-content">
-            <h2 class="section-title">PROJETOS</h2>
-            
-            <div class="add-project-container">
-                <button class="add-project-btn" id="add-project-btn">
-                    <i class="fas fa-plus"></i> Adicionar Projeto
-                </button>
-            </div>
-            
-            <div class="projects-wrapper">
-                <div class="projects-container" id="projects-container">
-                    <!-- Project cards will be added dynamically -->
+            <div class="about">
+                <h2>Sobre</h2>
+                <div id="aboutContent" class="about-content editable">
+                    Sou um profissional dedicado e apaixonado por tecnologia. Com experiência em diversas áreas, busco constantemente aprender e me desenvolver. Este portfólio apresenta alguns dos meus projetos mais relevantes.
+                </div>
+                <div class="social-links">
+                    <a id="linkedinBtn" href="https://linkedin.com" class="social-btn" target="_blank">
+                        <i class="fab fa-linkedin"></i> LinkedIn
+                    </a>
+                    <a id="githubBtn" href="https://github.com" class="social-btn" target="_blank">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                    <a id="whatsappBtn" href="https://wa.me/" class="social-btn" target="_blank">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <a id="resumeBtn" href="#" class="social-btn" target="_blank">
+                        <i class="fas fa-download"></i> Baixar CV
+                    </a>
                 </div>
             </div>
-        </div>
-        
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-brand">
-                <i class="fas fa-code"></i>
-                <span>Portfólio Emerson Flores</span>
-            </div>
-        </footer>
-        
-        <!-- Edit Mode -->
-        <div class="edit-mode">
-            <button class="projects-edit-btn" id="projects-edit-btn" title="Editar Projetos">
-                <i class="fas fa-project-diagram"></i>
-            </button>
-            <button class="edit-btn" id="edit-btn" title="Editar Perfil">
-                <i class="fas fa-user-edit"></i>
-            </button>
-        </div>
-        
-        <!-- Edit Panels -->
-        <div class="edit-panel" id="password-panel">
-            <h3 class="edit-panel-title">Digite a senha para editar</h3>
-            <div class="edit-field">
-                <input type="password" id="password-input" class="edit-input" placeholder="Senha">
-            </div>
-            <div class="edit-actions">
-                <button class="cancel-btn" id="cancel-password">Cancelar</button>
-                <button class="save-btn" id="confirm-password">Confirmar</button>
-            </div>
-        </div>
-        
-        <div class="edit-panel" id="profile-pic-panel">
-            <h3 class="edit-panel-title">Editar Foto de Perfil</h3>
-            <img id="profile-pic-preview" src="https://via.placeholder.com/150" alt="Preview" class="image-preview">
-            <label for="profile-pic-file" class="file-input-label">
-                <i class="fas fa-cloud-upload-alt"></i> Selecionar Imagem
-            </label>
-            <input type="file" id="profile-pic-file" class="file-input" accept="image/*">
-            <div class="edit-actions">
-                <button class="cancel-btn" id="cancel-profile-pic">Cancelar</button>
-                <button class="save-btn" id="save-profile-pic">Salvar</button>
-            </div>
-        </div>
-        
-        <div class="edit-panel" id="about-panel">
-            <h3 class="edit-panel-title">Editar Sobre</h3>
-            <div class="edit-field">
-                <label for="about-text">Texto Sobre:</label>
-                <textarea id="about-text" class="edit-input">Profissional dedicado e apaixonado por tecnologia. Com experiência em desenvolvimento web e soluções inovadoras, sempre buscando aprender e compartilhar conhecimento.</textarea>
-            </div>
-            <div class="edit-actions">
-                <button class="cancel-btn" id="cancel-about">Cancelar</button>
-                <button class="save-btn" id="save-about">Salvar</button>
-            </div>
-        </div>
-        
-        <div class="edit-panel" id="links-panel">
-            <h3 class="edit-panel-title">Editar Links</h3>
-            <div class="edit-field">
-                <label for="linkedin-link">LinkedIn:</label>
-                <input type="text" id="linkedin-link" class="edit-input" placeholder="Cole o link do LinkedIn">
-            </div>
-            <div class="edit-field">
-                <label for="github-link">GitHub:</label>
-                <input type="text" id="github-link" class="edit-input" placeholder="Cole o link do GitHub">
-            </div>
-            <div class="edit-field">
-                <label for="whatsapp-link">WhatsApp:</label>
-                <input type="text" id="whatsapp-link" class="edit-input" placeholder="Cole o link do WhatsApp">
-            </div>
-            <div class="edit-actions">
-                <button class="cancel-btn" id="cancel-links">Cancelar</button>
-                <button class="save-btn" id="save-links">Salvar</button>
-            </div>
-        </div>
-        
-        <div class="edit-panel" id="resume-panel">
-            <h3 class="edit-panel-title">Gerenciar Currículo</h3>
-            <div class="resume-management">
-                <div class="edit-field">
-                    <label for="resume-file" class="file-input-label">
-                        <i class="fas fa-cloud-upload-alt"></i> Selecionar Arquivo PDF
-                    </label>
-                    <input type="file" id="resume-file" class="file-input" accept=".pdf">
-                </div>
-                
-                <div id="current-resume-info" style="display: none;">
-                    <p class="resume-status">Currículo atual: <span id="resume-filename">Nenhum arquivo selecionado</span></p>
-                    <div class="resume-actions">
-                        <button class="resume-action-btn update-resume-btn" id="update-resume-btn">
-                            <i class="fas fa-sync-alt"></i> Atualizar
-                        </button>
-                        <button class="resume-action-btn remove-resume-btn" id="remove-resume-btn">
-                            <i class="fas fa-trash-alt"></i> Remover
-                        </button>
+        </header>
+
+        <section class="projects-section">
+            <h2>Projetos</h2>
+            <div id="projectsContainer" class="projects-container">
+                <!-- Projetos serão adicionados dinamicamente -->
+                <div class="project-card">
+                    <img src="https://via.placeholder.com/300x180" alt="Projeto 1" class="project-image">
+                    <div class="project-info">
+                        <h3 class="project-title editable">Nome do Projeto 1</h3>
+                        <p class="project-description editable">Descrição breve do projeto. O que foi feito, tecnologias utilizadas e objetivos alcançados.</p>
+                        <a href="#" class="project-link editable" data-link="project-link">Ver Projeto</a>
                     </div>
                 </div>
-                
-                <div id="no-resume-info" style="display: none;">
-                    <p class="resume-status">Nenhum currículo cadastrado</p>
+                <div class="project-card">
+                    <img src="https://via.placeholder.com/300x180" alt="Projeto 2" class="project-image">
+                    <div class="project-info">
+                        <h3 class="project-title editable">Nome do Projeto 2</h3>
+                        <p class="project-description editable">Descrição breve do projeto. O que foi feito, tecnologias utilizadas e objetivos alcançados.</p>
+                        <a href="#" class="project-link editable" data-link="project-link">Ver Projeto</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://via.placeholder.com/300x180" alt="Projeto 3" class="project-image">
+                    <div class="project-info">
+                        <h3 class="project-title editable">Nome do Projeto 3</h3>
+                        <p class="project-description editable">Descrição breve do projeto. O que foi feito, tecnologias utilizadas e objetivos alcançados.</p>
+                        <a href="#" class="project-link editable" data-link="project-link">Ver Projeto</a>
+                    </div>
                 </div>
             </div>
-            
-            <div class="edit-actions">
-                <button class="cancel-btn" id="cancel-resume">Cancelar</button>
-                <button class="save-btn" id="save-resume">Salvar</button>
-            </div>
-        </div>
-        
-        <div class="edit-panel" id="project-panel">
-            <h3 class="edit-panel-title" id="project-panel-title">Adicionar Novo Projeto</h3>
-            <input type="hidden" id="editing-project-index" value="-1">
-            <div class="edit-field">
-                <label for="project-title">Título do Projeto:</label>
-                <input type="text" id="project-title" class="edit-input" placeholder="Título do projeto">
-            </div>
-            <div class="edit-field">
-                <label for="project-description">Descrição:</label>
-                <textarea id="project-description" class="edit-input" placeholder="Descrição do projeto"></textarea>
-            </div>
-            <div class="edit-field">
-                <label for="project-image-file" class="file-input-label">
-                    <i class="fas fa-cloud-upload-alt"></i> Selecionar Imagem do Projeto
-                </label>
-                <input type="file" id="project-image-file" class="file-input" accept="image/*">
-                <img id="project-image-preview" src="" alt="Preview" class="project-image-preview" style="display: none;">
-            </div>
-            <div class="edit-field">
-                <label for="project-link">Link do Projeto:</label>
-                <input type="text" id="project-link" class="edit-input" placeholder="Cole o URL do projeto">
-            </div>
-            <div class="edit-actions">
-                <button class="cancel-btn" id="cancel-project">Cancelar</button>
-                <button class="save-btn" id="save-project">Salvar</button>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; <span id="currentYear"></span> Emerson Flores de Souza - Todos os direitos reservados</p>
+    </footer>
+
+    <div class="edit-btn" id="editBtn">
+        <i class="fas fa-edit"></i>
+    </div>
+
+    <div class="password-modal" id="passwordModal">
+        <div class="modal-content">
+            <h3>Digite a senha para editar</h3>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Senha">
+            <div class="modal-buttons">
+                <button class="modal-btn confirm-btn" id="confirmPassword">Confirmar</button>
+                <button class="modal-btn cancel-btn" id="cancelPassword">Cancelar</button>
             </div>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
     <script>
-        // Elements
-        const editBtn = document.getElementById('edit-btn');
-        const projectsEditBtn = document.getElementById('projects-edit-btn');
-        const addProjectBtn = document.getElementById('add-project-btn');
-        const passwordPanel = document.getElementById('password-panel');
-        const passwordInput = document.getElementById('password-input');
-        const confirmPassword = document.getElementById('confirm-password');
-        const cancelPassword = document.getElementById('cancel-password');
-        const projectsContainer = document.getElementById('projects-container');
-        
-        // Profile pic elements
-        const profilePicPanel = document.getElementById('profile-pic-panel');
-        const profilePicFile = document.getElementById('profile-pic-file');
-        const profilePicPreview = document.getElementById('profile-pic-preview');
-        const saveProfilePic = document.getElementById('save-profile-pic');
-        const cancelProfilePic = document.getElementById('cancel-profile-pic');
-        const profilePic = document.getElementById('profile-pic');
-        
-        // About elements
-        const aboutPanel = document.getElementById('about-panel');
-        const aboutText = document.getElementById('about-text');
-        const saveAbout = document.getElementById('save-about');
-        const cancelAbout = document.getElementById('cancel-about');
-        const aboutContent = document.getElementById('about-content');
-        
-        // Links elements
-        const linksPanel = document.getElementById('links-panel');
-        const linkedinLink = document.getElementById('linkedin-link');
-        const githubLink = document.getElementById('github-link');
-        const whatsappLink = document.getElementById('whatsapp-link');
-        const saveLinks = document.getElementById('save-links');
-        const cancelLinks = document.getElementById('cancel-links');
-        const linkedinBtn = document.getElementById('linkedin-btn');
-        const githubBtn = document.getElementById('github-btn');
-        const whatsappBtn = document.getElementById('whatsapp-btn');
-        
-        // Resume elements
-        const resumePanel = document.getElementById('resume-panel');
-        const resumeFile = document.getElementById('resume-file');
-        const saveResume = document.getElementById('save-resume');
-        const cancelResume = document.getElementById('cancel-resume');
-        const resumeBtn = document.getElementById('resume-btn');
-        const updateResumeBtn = document.getElementById('update-resume-btn');
-        const removeResumeBtn = document.getElementById('remove-resume-btn');
-        const resumeFilename = document.getElementById('resume-filename');
-        const currentResumeInfo = document.getElementById('current-resume-info');
-        const noResumeInfo = document.getElementById('no-resume-info');
-        
-        // Project elements
-        const projectPanel = document.getElementById('project-panel');
-        const projectPanelTitle = document.getElementById('project-panel-title');
-        const projectTitle = document.getElementById('project-title');
-        const projectDescription = document.getElementById('project-description');
-        const projectImageFile = document.getElementById('project-image-file');
-        const projectImagePreview = document.getElementById('project-image-preview');
-        const projectLink = document.getElementById('project-link');
-        const saveProject = document.getElementById('save-project');
-        const cancelProject = document.getElementById('cancel-project');
-        const editingProjectIndex = document.getElementById('editing-project-index');
-        
-        // Correct password
-        const CORRECT_PASSWORD = '123';
-        let isAuthenticated = false;
-        let isProjectsEditMode = false;
-        
-        // Data storage
-        let portfolioData = {
-            profilePic: 'https://via.placeholder.com/150',
-            aboutText: 'Profissional dedicado e apaixonado por tecnologia. Com experiência em desenvolvimento web e soluções inovadoras, sempre buscando aprender e compartilhar conhecimento.',
-            links: {
-                linkedin: '#',
-                github: '#',
-                whatsapp: '#'
-            },
-            resume: null,
-            resumeName: null,
-            projects: []
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDi9eMlOCjHP98JbvKjaJ5Ek6lMdjnJS6U",
+            authDomain: "portfolio-emerson.firebaseapp.com",
+            projectId: "portfolio-emerson",
+            storageBucket: "portfolio-emerson.appspot.com",
+            messagingSenderId: "23143093943",
+            appId: "1:23143093943:web:c2b0458941e31de27d9f32"
         };
-        
-        // Initialize the page
-        function initPortfolio() {
-            // Load saved data from localStorage
-            const savedData = localStorage.getItem('portfolioData');
-            if (savedData) {
-                portfolioData = JSON.parse(savedData);
-            }
-            
-            // Apply the loaded data
-            profilePic.src = portfolioData.profilePic;
-            aboutContent.innerText = portfolioData.aboutText;
-            linkedinBtn.href = portfolioData.links.linkedin;
-            githubBtn.href = portfolioData.links.github;
-            whatsappBtn.href = portfolioData.links.whatsapp;
-            
-            // Load projects
-            portfolioData.projects.forEach((project, index) => {
-                addProjectToDOM(project, index);
+
+        // Inicializa o Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        // Elementos da UI
+        const editBtn = document.getElementById('editBtn');
+        const passwordModal = document.getElementById('passwordModal');
+        const passwordInput = document.getElementById('passwordInput');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const cancelPassword = document.getElementById('cancelPassword');
+        const profileImage = document.getElementById('profileImage');
+        const profileName = document.getElementById('profileName');
+        const aboutContent = document.getElementById('aboutContent');
+        const linkedinBtn = document.getElementById('linkedinBtn');
+        const githubBtn = document.getElementById('githubBtn');
+        const whatsappBtn = document.getElementById('whatsappBtn');
+        const resumeBtn = document.getElementById('resumeBtn');
+        const projectsContainer = document.getElementById('projectsContainer');
+
+        // Senha para edição
+        const EDIT_PASSWORD = "123";
+
+        // Verifica se estamos em modo de edição
+        let editMode = false;
+
+        // Carrega os dados do Firebase
+        function loadData() {
+            database.ref('portfolio').once('value').then((snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    // Carrega dados do perfil
+                    if (data.profile) {
+                        if (data.profile.name) profileName.textContent = data.profile.name;
+                        if (data.profile.about) aboutContent.textContent = data.profile.about;
+                        if (data.profile.imageUrl) profileImage.src = data.profile.imageUrl;
+                    }
+
+                    // Carrega links sociais
+                    if (data.socialLinks) {
+                        if (data.socialLinks.linkedin) linkedinBtn.href = data.socialLinks.linkedin;
+                        if (data.socialLinks.github) githubBtn.href = data.socialLinks.github;
+                        if (data.socialLinks.whatsapp) whatsappBtn.href = data.socialLinks.whatsapp;
+                        if (data.socialLinks.resume) resumeBtn.href = data.socialLinks.resume;
+                    }
+
+                    // Carrega projetos
+                    if (data.projects) {
+                        projectsContainer.innerHTML = '';
+                        data.projects.forEach(project => {
+                            const projectCard = document.createElement('div');
+                            projectCard.className = 'project-card';
+                            projectCard.innerHTML = `
+                                <img src="${project.imageUrl || 'https://via.placeholder.com/300x180'}" alt="${project.title}" class="project-image">
+                                <div class="project-info">
+                                    <h3 class="project-title editable">${project.title || 'Nome do Projeto'}</h3>
+                                    <p class="project-description editable">${project.description || 'Descrição do projeto'}</p>
+                                    <a href="${project.link || '#'}" class="project-link editable" data-link="project-link">Ver Projeto</a>
+                                </div>
+                            `;
+                            projectsContainer.appendChild(projectCard);
+                        });
+                    }
+                }
             });
-            
-            // Set resume info
-            updateResumeInfo();
-            
-            // Update scrollbar visibility
-            updateProjectsScrollbar();
         }
-        
-        // Add project to DOM
-        function addProjectToDOM(project, index) {
-            const projectCard = document.createElement('div');
-            projectCard.className = 'project-card';
-            projectCard.innerHTML = `
-                ${isProjectsEditMode ? `
-                <div class="project-actions">
-                    <button class="edit-project-btn" data-index="${index}"><i class="fas fa-edit"></i></button>
-                    <button class="delete-project-btn" data-index="${index}"><i class="fas fa-trash"></i></button>
-                </div>
-                ` : ''}
-                <img src="${project.image}" alt="${project.title}" class="project-image">
-                <div class="project-info">
-                    <h3 class="project-title">${project.title}</h3>
-                    <p class="project-description">${project.description}</p>
-                    <a href="${project.link || '#'}" class="project-link">Ver Projeto</a>
-                </div>
-            `;
-            projectsContainer.appendChild(projectCard);
+
+        // Salva os dados no Firebase
+        function saveData() {
+            const profileData = {
+                name: profileName.textContent,
+                about: aboutContent.textContent,
+                imageUrl: profileImage.src
+            };
+
+            const socialLinksData = {
+                linkedin: linkedinBtn.href,
+                github: githubBtn.href,
+                whatsapp: whatsappBtn.href,
+                resume: resumeBtn.href
+            };
+
+            const projectsData = [];
+            document.querySelectorAll('.project-card').forEach(card => {
+                projectsData.push({
+                    title: card.querySelector('.project-title').textContent,
+                    description: card.querySelector('.project-description').textContent,
+                    imageUrl: card.querySelector('img').src,
+                    link: card.querySelector('.project-link').href
+                });
+            });
+
+            database.ref('portfolio').set({
+                profile: profileData,
+                socialLinks: socialLinksData,
+                projects: projectsData
+            });
+        }
+
+        // Ativa/desativa o modo de edição
+        function toggleEditMode() {
+            editMode = !editMode;
+            document.body.classList.toggle('edit-mode', editMode);
             
-            // Add event listeners for edit and delete buttons if in edit mode
-            if (isProjectsEditMode) {
-                projectCard.querySelector('.edit-project-btn').addEventListener('click', (e) => {
-                    editProject(index);
+            // Habilita/desabilita a edição dos elementos
+            document.querySelectorAll('.editable').forEach(element => {
+                element.contentEditable = editMode;
+            });
+
+            // Configura eventos para elementos editáveis
+            if (editMode) {
+                document.querySelectorAll('.editable').forEach(element => {
+                    element.addEventListener('blur', saveData);
+                });
+
+                // Configura o upload de imagem de perfil
+                profileImage.addEventListener('click', function() {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.onchange = e => {
+                        const file = e.target.files[0];
+                        const storageRef = storage.ref('profile/' + file.name);
+                        const uploadTask = storageRef.put(file);
+                        
+                        uploadTask.on('state_changed', 
+                            null, 
+                            (error) => {
+                                console.error('Upload failed:', error);
+                            }, 
+                            () => {
+                                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                                    profileImage.src = downloadURL;
+                                    saveData();
+                                });
+                            }
+                        );
+                    };
+                    input.click();
+                });
+
+                // Configura o upload de imagens de projetos
+                document.querySelectorAll('.project-image').forEach(img => {
+                    img.addEventListener('click', function() {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        input.onchange = e => {
+                            const file = e.target.files[0];
+                            const projectCard = this.closest('.project-card');
+                            const projectIndex = Array.from(projectCard.parentNode.children).indexOf(projectCard);
+                            const storageRef = storage.ref('projects/project_' + projectIndex + '_' + file.name);
+                            const uploadTask = storageRef.put(file);
+                            
+                            uploadTask.on('state_changed', 
+                                null, 
+                                (error) => {
+                                    console.error('Upload failed:', error);
+                                }, 
+                                () => {
+                                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                                        this.src = downloadURL;
+                                        saveData();
+                                    });
+                                }
+                            );
+                        };
+                        input.click();
+                    });
+                });
+
+                // Adiciona botão para adicionar novo projeto
+                const addProjectBtn = document.createElement('button');
+                addProjectBtn.textContent = '+ Adicionar Projeto';
+                addProjectBtn.style.marginTop = '20px';
+                addProjectBtn.style.padding = '10px 15px';
+                addProjectBtn.style.backgroundColor = 'var(--accent-color)';
+                addProjectBtn.style.color = 'white';
+                addProjectBtn.style.border = 'none';
+                addProjectBtn.style.borderRadius = '5px';
+                addProjectBtn.style.cursor = 'pointer';
+                addProjectBtn.onclick = function() {
+                    const newProject = document.createElement('div');
+                    newProject.className = 'project-card';
+                    newProject.innerHTML = `
+                        <img src="https://via.placeholder.com/300x180" alt="Novo Projeto" class="project-image">
+                        <div class="project-info">
+                            <h3 class="project-title editable">Novo Projeto</h3>
+                            <p class="project-description editable">Descrição do novo projeto</p>
+                            <a href="#" class="project-link editable" data-link="project-link">Ver Projeto</a>
+                        </div>
+                    `;
+                    projectsContainer.appendChild(newProject);
+                    saveData();
+                    
+                    // Configura o upload de imagem para o novo projeto
+                    newProject.querySelector('.project-image').addEventListener('click', function() {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        input.onchange = e => {
+                            const file = e.target.files[0];
+                            const projectCard = this.closest('.project-card');
+                            const projectIndex = Array.from(projectCard.parentNode.children).indexOf(projectCard);
+                            const storageRef = storage.ref('projects/project_' + projectIndex + '_' + file.name);
+                            const uploadTask = storageRef.put(file);
+                            
+                            uploadTask.on('state_changed', 
+                                null, 
+                                (error) => {
+                                    console.error('Upload failed:', error);
+                                }, 
+                                () => {
+                                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                                        this.src = downloadURL;
+                                        saveData();
+                                    });
+                                }
+                            );
+                        };
+                        input.click();
+                    });
+                };
+                
+                const projectsSection = document.querySelector('.projects-section');
+                if (!document.getElementById('addProjectBtn')) {
+                    addProjectBtn.id = 'addProjectBtn';
+                    projectsSection.appendChild(addProjectBtn);
+                }
+            } else {
+                // Remove eventos e botão de adicionar projeto
+                document.querySelectorAll('.editable').forEach(element => {
+                    element.removeEventListener('blur', saveData);
                 });
                 
-                projectCard.querySelector('.delete-project-btn').addEventListener('click', (e) => {
-                    deleteProject(index);
+                profileImage.removeEventListener('click', arguments.callee);
+                document.querySelectorAll('.project-image').forEach(img => {
+                    img.removeEventListener('click', arguments.callee);
                 });
+                
+                const addProjectBtn = document.getElementById('addProjectBtn');
+                if (addProjectBtn) {
+                    addProjectBtn.remove();
+                }
             }
         }
-        
-        // Update projects scrollbar visibility
-        function updateProjectsScrollbar() {
-            if (portfolioData.projects.length > 3) {
-                projectsContainer.classList.add('has-scrollbar');
-            } else {
-                projectsContainer.classList.remove('has-scrollbar');
-            }
-        }
-        
-        // Update resume information in the UI
-        function updateResumeInfo() {
-            if (portfolioData.resume) {
-                resumeBtn.href = portfolioData.resume;
-                resumeBtn.download = portfolioData.resumeName || 'Curriculo_Emerson_Flores.pdf';
-                resumeFilename.textContent = portfolioData.resumeName || 'Currículo atual';
-                currentResumeInfo.style.display = 'block';
-                noResumeInfo.style.display = 'none';
-            } else {
-                resumeBtn.href = '#';
-                resumeBtn.removeAttribute('download');
-                currentResumeInfo.style.display = 'none';
-                noResumeInfo.style.display = 'block';
-            }
-        }
-        
-        // Edit project
-        function editProject(index) {
-            const project = portfolioData.projects[index];
-            projectPanelTitle.textContent = 'Editar Projeto';
-            editingProjectIndex.value = index;
-            projectTitle.value = project.title;
-            projectDescription.value = project.description;
-            projectLink.value = project.link || '';
-            
-            if (project.image) {
-                projectImagePreview.src = project.image;
-                projectImagePreview.style.display = 'block';
-            } else {
-                projectImagePreview.style.display = 'none';
-            }
-            
-            showPanel(projectPanel);
-        }
-        
-        // Delete project
-        function deleteProject(index) {
-            if (confirm('Tem certeza que deseja excluir este projeto?')) {
-                portfolioData.projects.splice(index, 1);
-                saveData();
-                refreshProjects();
-            }
-        }
-        
-        // Refresh projects list
-        function refreshProjects() {
-            projectsContainer.innerHTML = '';
-            portfolioData.projects.forEach((project, index) => {
-                addProjectToDOM(project, index);
-            });
-            updateProjectsScrollbar();
-        }
-        
-        // Toggle projects edit mode
-        function toggleProjectsEditMode() {
-            isProjectsEditMode = !isProjectsEditMode;
-            addProjectBtn.style.display = isProjectsEditMode ? 'block' : 'none';
-            refreshProjects();
-        }
-        
-        // Save data to localStorage
-        function saveData() {
-            localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
-        }
-        
+
         // Event Listeners
-        
-        // Toggle edit panels
         editBtn.addEventListener('click', () => {
-            if (!isAuthenticated) {
-                showPanel(passwordPanel);
-                passwordInput.focus();
+            if (!editMode) {
+                passwordModal.style.display = 'flex';
             } else {
-                showPanel(linksPanel);
+                toggleEditMode();
             }
         });
-        
-        projectsEditBtn.addEventListener('click', () => {
-            if (!isAuthenticated) {
-                showPanel(passwordPanel);
-                passwordInput.focus();
-            } else {
-                toggleProjectsEditMode();
-            }
-        });
-        
-        addProjectBtn.addEventListener('click', () => {
-            projectPanelTitle.textContent = 'Adicionar Novo Projeto';
-            editingProjectIndex.value = '-1';
-            projectTitle.value = '';
-            projectDescription.value = '';
-            projectImageFile.value = '';
-            projectImagePreview.src = '';
-            projectImagePreview.style.display = 'none';
-            projectLink.value = '';
-            showPanel(projectPanel);
-        });
-        
-        // Password verification
+
         confirmPassword.addEventListener('click', () => {
-            if (passwordInput.value === CORRECT_PASSWORD) {
-                isAuthenticated = true;
-                hidePanel(passwordPanel);
+            if (passwordInput.value === EDIT_PASSWORD) {
+                passwordModal.style.display = 'none';
                 passwordInput.value = '';
+                toggleEditMode();
             } else {
                 alert('Senha incorreta!');
                 passwordInput.value = '';
             }
         });
-        
+
         cancelPassword.addEventListener('click', () => {
-            hidePanel(passwordPanel);
+            passwordModal.style.display = 'none';
             passwordInput.value = '';
         });
-        
-        // Profile pic editing
-        profilePic.addEventListener('click', (e) => {
-            if (isAuthenticated) {
-                profilePicPreview.src = profilePic.src;
-                showPanel(profilePicPanel);
-            }
-        });
-        
-        profilePicFile.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    profilePicPreview.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        saveProfilePic.addEventListener('click', () => {
-            portfolioData.profilePic = profilePicPreview.src;
-            profilePic.src = profilePicPreview.src;
-            saveData();
-            hidePanel(profilePicPanel);
-            alert('Foto de perfil atualizada com sucesso!');
-        });
-        
-        cancelProfilePic.addEventListener('click', () => {
-            hidePanel(profilePicPanel);
-        });
-        
-        // About editing
-        document.getElementById('about-section').addEventListener('click', (e) => {
-            if (isAuthenticated) {
-                aboutText.value = portfolioData.aboutText;
-                showPanel(aboutPanel);
-            }
-        });
-        
-        saveAbout.addEventListener('click', () => {
-            portfolioData.aboutText = aboutText.value;
-            aboutContent.innerText = aboutText.value;
-            saveData();
-            hidePanel(aboutPanel);
-            alert('Texto sobre atualizado com sucesso!');
-        });
-        
-        cancelAbout.addEventListener('click', () => {
-            hidePanel(aboutPanel);
-        });
-        
-        // Links editing
-        saveLinks.addEventListener('click', () => {
-            portfolioData.links = {
-                linkedin: linkedinLink.value || '#',
-                github: githubLink.value || '#',
-                whatsapp: whatsappLink.value || '#'
-            };
-            
-            linkedinBtn.href = portfolioData.links.linkedin;
-            githubBtn.href = portfolioData.links.github;
-            whatsappBtn.href = portfolioData.links.whatsapp;
-            
-            saveData();
-            hidePanel(linksPanel);
-            alert('Links atualizados com sucesso!');
-        });
-        
-        cancelLinks.addEventListener('click', () => {
-            hidePanel(linksPanel);
-        });
-        
-        // Resume editing
-        resumeBtn.addEventListener('click', (e) => {
-            if (isAuthenticated && e.target.tagName !== 'A') {
-                e.preventDefault();
-                showPanel(resumePanel);
-                document.getElementById('resume-file').value = '';
-                document.getElementById('save-resume').disabled = true;
-            } else if (!portfolioData.resume) {
-                e.preventDefault();
-                alert('Nenhum currículo disponível para download.');
-            }
-        });
-        
-        updateResumeBtn.addEventListener('click', () => {
-            document.getElementById('resume-file').click();
-        });
-        
-        removeResumeBtn.addEventListener('click', () => {
-            if (confirm('Tem certeza que deseja remover o currículo atual?')) {
-                portfolioData.resume = null;
-                portfolioData.resumeName = null;
-                saveData();
-                updateResumeInfo();
-                alert('Currículo removido com sucesso!');
-            }
-        });
-        
-        resumeFile.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('save-resume').disabled = false;
-            }
-        });
-        
-        saveResume.addEventListener('click', () => {
-            const file = resumeFile.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    portfolioData.resume = event.target.result;
-                    portfolioData.resumeName = file.name;
-                    saveData();
-                    updateResumeInfo();
-                    hidePanel(resumePanel);
-                    alert('Currículo atualizado com sucesso!');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                if (!portfolioData.resume) {
-                    alert('Por favor, selecione um arquivo PDF.');
-                } else {
-                    hidePanel(resumePanel);
-                }
-            }
-        });
-        
-        cancelResume.addEventListener('click', () => {
-            hidePanel(resumePanel);
-        });
-        
-        // Project editing
-        saveProject.addEventListener('click', () => {
-            if (!projectTitle.value || !projectDescription.value) {
-                alert('Por favor, preencha pelo menos o título e a descrição do projeto.');
-                return;
-            }
-            
-            const projectData = {
-                title: projectTitle.value,
-                description: projectDescription.value,
-                link: projectLink.value || '#',
-                image: projectImagePreview.src || 'https://via.placeholder.com/300x180'
-            };
-            
-            const index = parseInt(editingProjectIndex.value);
-            if (index >= 0) {
-                // Editing existing project
-                portfolioData.projects[index] = projectData;
-            } else {
-                // Adding new project
-                portfolioData.projects.push(projectData);
-            }
-            
-            saveData();
-            refreshProjects();
-            hidePanel(projectPanel);
-            resetProjectForm();
-            alert('Projeto salvo com sucesso!');
-        });
-        
-        cancelProject.addEventListener('click', () => {
-            hidePanel(projectPanel);
-            resetProjectForm();
-        });
-        
-        projectImageFile.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    projectImagePreview.src = event.target.result;
-                    projectImagePreview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        // Helper functions
-        function showPanel(panel) {
-            document.querySelectorAll('.edit-panel').forEach(p => p.classList.remove('show'));
-            panel.classList.add('show');
-            
-            // Load current data when showing certain panels
-            if (panel === linksPanel) {
-                linkedinLink.value = portfolioData.links.linkedin;
-                githubLink.value = portfolioData.links.github;
-                whatsappLink.value = portfolioData.links.whatsapp;
-            }
-        }
-        
-        function hidePanel(panel) {
-            panel.classList.remove('show');
-        }
-        
-        function resetProjectForm() {
-            projectPanelTitle.textContent = 'Adicionar Novo Projeto';
-            editingProjectIndex.value = '-1';
-            projectTitle.value = '';
-            projectDescription.value = '';
-            projectImageFile.value = '';
-            projectImagePreview.src = '';
-            projectImagePreview.style.display = 'none';
-            projectLink.value = '';
-        }
-        
-        // Initialize the portfolio
-        initPortfolio();
+
+        // Atualiza o ano no footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Carrega os dados quando a página é carregada
+        window.addEventListener('DOMContentLoaded', loadData);
     </script>
 </body>
 </html>
