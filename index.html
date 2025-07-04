@@ -3,317 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emerson Flores - Portfólio Profissional</title>
+    <title>Portfólio - Emerson Flores de Souza</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         :root {
-            --primary: #1e293b;
-            --secondary: #334155;
-            --accent: #3b82f6;
-            --text: #f8fafc;
-            --text-secondary: #94a3b8;
-            --card-bg: #1e293b;
-            --success: #10b981;
-            --danger: #ef4444;
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #7f8c8d;
+            --text-color: #ecf0f1;
+            --highlight-color: #bdc3c7;
+            --background-color: #f5f5f5;
+            --card-color: #ffffff;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: var(--primary);
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Header Styles */
-        .profile-header {
             display: flex;
-            flex-wrap: wrap;
-            gap: 3rem;
-            align-items: center;
-            margin-bottom: 3rem;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            color: #333;
         }
 
-        .profile-section {
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1.5rem;
-            min-width: 250px;
+            position: fixed;
+            height: 100vh;
+            transition: all 0.3s;
+            z-index: 100;
         }
 
         .profile-pic-container {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid var(--highlight-color);
+            margin-bottom: 20px;
             position: relative;
-            width: 220px;
-            height: 220px;
         }
 
         .profile-pic {
             width: 100%;
             height: 100%;
-            border-radius: 50%;
             object-fit: cover;
-            border: 4px solid var(--accent);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
         }
 
-        .profile-pic:hover {
-            transform: scale(1.03);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-        }
-
-        .edit-overlay {
+        .edit-profile-pic {
             position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-            cursor: pointer;
-        }
-
-        .edit-mode .edit-overlay {
-            opacity: 1;
-        }
-
-        .profile-name {
-            font-size: 2rem;
-            font-weight: 700;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
             text-align: center;
-            color: var(--text);
+            padding: 5px;
+            cursor: pointer;
+            display: none;
         }
 
-        .about-section {
-            flex: 1;
-            min-width: 300px;
-            background: var(--secondary);
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        .profile-pic-container:hover .edit-profile-pic {
+            display: block;
         }
 
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--accent);
-            font-weight: 600;
+        #profile-upload {
+            display: none;
+        }
+
+        .name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
         }
 
         .social-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 2rem;
+            width: 100%;
+            margin-bottom: 30px;
         }
 
-        .social-btn {
-            display: inline-flex;
+        .social-link {
+            display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.25rem;
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--accent);
-            border-radius: 0.5rem;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
             text-decoration: none;
             transition: all 0.3s;
-            border: 1px solid rgba(59, 130, 246, 0.2);
         }
 
-        .social-btn:hover {
-            background: var(--accent);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+        .social-link:hover {
+            background-color: var(--accent-color);
+            transform: translateX(5px);
         }
 
-        /* Projects Section */
-        .projects-section {
-            margin-top: 3rem;
+        .social-link i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 300px;
+            padding: 30px;
         }
 
         .projects-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 30px;
         }
 
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
+        .projects-title {
+            font-size: 28px;
+            color: var(--secondary-color);
+        }
+
+        .edit-mode-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .edit-mode-btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        .projects-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding-bottom: 20px;
         }
 
         .project-card {
-            background: var(--card-bg);
-            border-radius: 1rem;
+            min-width: 300px;
+            background-color: var(--card-color);
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .project-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-        }
-
-        .project-image-container {
-            height: 180px;
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
         .project-image {
             width: 100%;
-            height: 100%;
+            height: 180px;
             object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .project-card:hover .project-image {
-            transform: scale(1.05);
         }
 
         .project-info {
-            padding: 1.5rem;
+            padding: 20px;
         }
 
         .project-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: var(--text);
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary-color);
         }
 
         .project-description {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            margin-bottom: 1.5rem;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
         }
 
         .project-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--accent);
+            display: inline-block;
+            background-color: var(--primary-color);
             color: white;
-            border-radius: 0.5rem;
+            padding: 8px 15px;
+            border-radius: 5px;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 14px;
             transition: all 0.3s;
         }
 
         .project-link:hover {
-            background: #2563eb;
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+            background-color: var(--secondary-color);
+        }
+
+        .edit-project-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+        }
+
+        .delete-project-btn {
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            background-color: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
         }
 
         .add-project-btn {
-            display: none;
+            min-width: 300px;
+            background-color: var(--card-color);
+            border: 2px dashed var(--accent-color);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
             cursor: pointer;
-            font-weight: 500;
             transition: all 0.3s;
+            color: var(--accent-color);
+            font-size: 24px;
         }
 
         .add-project-btn:hover {
-            background: #059669;
-            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+            background-color: #f0f0f0;
         }
 
-        .edit-mode .add-project-btn {
-            display: inline-flex;
-        }
-
-        .delete-project {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: var(--danger);
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            cursor: pointer;
-            z-index: 10;
-            transition: all 0.3s;
-        }
-
-        .delete-project:hover {
-            background: #dc2626;
-            transform: scale(1.1);
-        }
-
-        .edit-mode .delete-project {
-            display: flex;
-        }
-
-        /* Edit Mode Styles */
-        .edit-mode .editable {
-            border: 1px dashed rgba(255, 255, 255, 0.3);
-            border-radius: 0.25rem;
-            padding: 0.25rem;
-            margin: -0.25rem;
-            min-height: 1.5em;
-        }
-
-        /* Edit Button */
-        .edit-btn {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 56px;
-            height: 56px;
-            background: var(--accent);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
-            z-index: 100;
-            transition: all 0.3s;
-        }
-
-        .edit-btn:hover {
-            transform: scale(1.1);
-            background: #2563eb;
-        }
-
-        /* Modal Styles */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -321,204 +281,298 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
 
         .modal-content {
-            background: var(--secondary);
-            border-radius: 1rem;
-            padding: 2rem;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
             width: 90%;
-            max-width: 400px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-            animation: modalFadeIn 0.3s ease;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
         }
 
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         .modal-title {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--accent);
+            font-size: 22px;
+            color: var(--primary-color);
         }
 
-        .modal-input {
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-input {
             width: 100%;
-            padding: 0.75rem 1rem;
-            margin-bottom: 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.5rem;
-            color: var(--text);
-            font-size: 1rem;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
         }
 
-        .modal-input:focus {
-            outline: none;
-            border-color: var(--accent);
+        .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            min-height: 100px;
+            resize: vertical;
         }
 
         .modal-actions {
             display: flex;
-            gap: 1rem;
             justify-content: flex-end;
+            gap: 10px;
         }
 
-        .modal-btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
+        .save-btn, .cancel-btn {
+            padding: 10px 20px;
             border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
         }
 
-        .modal-btn.confirm {
-            background: var(--accent);
+        .save-btn {
+            background-color: var(--primary-color);
             color: white;
         }
 
-        .modal-btn.confirm:hover {
-            background: #2563eb;
+        .save-btn:hover {
+            background-color: var(--secondary-color);
         }
 
-        .modal-btn.cancel {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text);
+        .cancel-btn {
+            background-color: #ddd;
+            color: #333;
         }
 
-        .modal-btn.cancel:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .cancel-btn:hover {
+            background-color: #ccc;
         }
 
-        /* Loading State */
-        .loading {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .loading::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: loading 1.5s infinite;
-        }
-
-        @keyframes loading {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+        /* Password Modal */
+        .password-modal {
+            display: none;
         }
 
         /* Footer */
         footer {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
             text-align: center;
-            padding: 2rem;
-            margin-top: 4rem;
-            background: var(--secondary);
+            padding: 15px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin-left: 300px;
+        }
+
+        /* Edit Mode */
+        .edit-mode .edit-profile-pic {
+            display: block;
+        }
+
+        .edit-mode .edit-project-btn, 
+        .edit-mode .delete-project-btn {
+            display: block;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .profile-header {
+            body {
                 flex-direction: column;
-                text-align: center;
             }
-
-            .social-links {
-                justify-content: center;
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
             }
-
-            .projects-header {
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            footer {
+                margin-left: 0;
+                position: relative;
+            }
+            
+            .projects-container {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
+                overflow-x: visible;
+            }
+            
+            .project-card {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .add-project-btn {
+                width: 100%;
+                min-width: auto;
+                height: 150px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="profile-header">
-            <div class="profile-section">
-                <div class="profile-pic-container">
-                    <img id="profileImage" src="https://via.placeholder.com/300" alt="Foto de Emerson Flores" class="profile-pic">
-                    <div class="edit-overlay">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                </div>
-                <h1 id="profileName" class="profile-name editable">EMERSON FLORES DE SOUZA</h1>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="profile-pic-container">
+            <img id="profile-pic" class="profile-pic" src="https://via.placeholder.com/150" alt="Foto de perfil">
+            <div class="edit-profile-pic">
+                <label for="profile-upload">Alterar Foto</label>
+                <input type="file" id="profile-upload" accept="image/*">
             </div>
-            <div class="about-section">
-                <h2 class="section-title">Sobre</h2>
-                <div id="aboutContent" class="about-content editable">
-                    Sou um profissional dedicado e apaixonado por tecnologia. Com experiência em diversas áreas, busco constantemente aprender e me desenvolver. Este portfólio apresenta alguns dos meus projetos mais relevantes.
-                </div>
-                <div class="social-links">
-                    <a id="linkedinBtn" href="https://linkedin.com" class="social-btn editable" data-editable-type="link" target="_blank">
-                        <i class="fab fa-linkedin"></i> LinkedIn
-                    </a>
-                    <a id="githubBtn" href="https://github.com" class="social-btn editable" data-editable-type="link" target="_blank">
-                        <i class="fab fa-github"></i> GitHub
-                    </a>
-                    <a id="whatsappBtn" href="https://wa.me/" class="social-btn editable" data-editable-type="link" target="_blank">
-                        <i class="fab fa-whatsapp"></i> WhatsApp
-                    </a>
-                    <a id="resumeBtn" href="#" class="social-btn editable" data-editable-type="link" target="_blank">
-                        <i class="fas fa-download"></i> Currículo
-                    </a>
-                </div>
+        </div>
+        
+        <h1 class="name" id="user-name">EMERSON FLORES DE SOUZA</h1>
+        
+        <div class="social-links" id="social-links">
+            <!-- Social links will be added here -->
+        </div>
+        
+        <a href="#" class="download-btn" id="resume-link">Baixar Currículo</a>
+        <input type="file" id="resume-upload" accept=".pdf,.doc,.docx" style="display: none;">
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="projects-header">
+            <h2 class="projects-title">Projetos</h2>
+            <button class="edit-mode-btn" id="edit-mode-btn">Editar Página</button>
+        </div>
+        
+        <div class="projects-container" id="projects-container">
+            <!-- Project cards will be added here -->
+            <div class="add-project-btn" id="add-project-btn">
+                <i class="fas fa-plus"></i>
             </div>
-        </header>
-
-        <section class="projects-section">
-            <div class="projects-header">
-                <h2 class="section-title">Projetos</h2>
-                <button id="addProjectBtn" class="add-project-btn">
-                    <i class="fas fa-plus"></i> Adicionar Projeto
-                </button>
-            </div>
-            <div id="projectsGrid" class="projects-grid">
-                <!-- Projetos serão adicionados dinamicamente -->
-            </div>
-        </section>
-    </div>
-
-    <footer>
-        <p>&copy; <span id="currentYear"></span> Emerson Flores de Souza - Todos os direitos reservados</p>
-    </footer>
-
-    <div class="edit-btn" id="editBtn">
-        <i class="fas fa-edit"></i>
-    </div>
-
-    <div class="modal" id="passwordModal">
+        </div>
+    </main>
+    
+    <!-- Project Modal -->
+    <div class="modal" id="project-modal">
         <div class="modal-content">
-            <h3 class="modal-title">Acesso de Edição</h3>
-            <input type="password" class="modal-input" id="passwordInput" placeholder="Digite sua senha">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Adicionar Projeto</h3>
+                <button class="close-modal" id="close-modal">&times;</button>
+            </div>
+            <form id="project-form">
+                <input type="hidden" id="project-id">
+                <div class="form-group">
+                    <label for="project-name" class="form-label">Nome do Projeto</label>
+                    <input type="text" id="project-name" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="project-description" class="form-label">Descrição</label>
+                    <textarea id="project-description" class="form-textarea" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="project-image" class="form-label">Imagem do Projeto</label>
+                    <input type="file" id="project-image" class="form-input" accept="image/*">
+                    <img id="project-image-preview" src="" alt="Preview" style="max-width: 100%; margin-top: 10px; display: none;">
+                </div>
+                <div class="form-group">
+                    <label for="project-url" class="form-label">Link do Projeto</label>
+                    <input type="url" id="project-url" class="form-input">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" id="cancel-project">Cancelar</button>
+                    <button type="submit" class="save-btn">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Social Link Modal -->
+    <div class="modal" id="social-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Editar Link</h3>
+                <button class="close-modal" id="close-social-modal">&times;</button>
+            </div>
+            <form id="social-form">
+                <input type="hidden" id="social-id">
+                <div class="form-group">
+                    <label for="social-platform" class="form-label">Plataforma</label>
+                    <select id="social-platform" class="form-input" required>
+                        <option value="">Selecione...</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="github">GitHub</option>
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="other">Outro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="social-url" class="form-label">URL</label>
+                    <input type="url" id="social-url" class="form-input" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" id="cancel-social">Cancelar</button>
+                    <button type="submit" class="save-btn">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Password Modal -->
+    <div class="modal password-modal" id="password-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Digite a Senha</h3>
+                <button class="close-modal" id="close-password-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label">Senha</label>
+                <input type="password" id="password" class="form-input" placeholder="Digite a senha para editar">
+            </div>
+            <p id="password-error" style="color: red; margin-bottom: 15px; display: none;">Senha incorreta!</p>
             <div class="modal-actions">
-                <button class="modal-btn cancel" id="cancelPassword">Cancelar</button>
-                <button class="modal-btn confirm" id="confirmPassword">Acessar</button>
+                <button type="button" class="cancel-btn" id="cancel-password">Cancelar</button>
+                <button type="button" class="save-btn" id="confirm-password">Confirmar</button>
             </div>
         </div>
     </div>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-
+    
+    <!-- Footer -->
+    <footer>
+        <p>&copy; <span id="current-year"></span> Emerson Flores de Souza - Todos os direitos reservados</p>
+    </footer>
+    
     <script>
-        // Configuração do Firebase
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDi9eMlOCjHP98JbvKjaJ5Ek6lMdjnJS6U",
             authDomain: "portfolio-emerson.firebaseapp.com",
@@ -528,398 +582,513 @@
             appId: "1:23143093943:web:c2b0458941e31de27d9f32"
         };
 
-        // Inicializa o Firebase
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const storage = firebase.storage();
 
-        // Elementos da UI
-        const editBtn = document.getElementById('editBtn');
-        const passwordModal = document.getElementById('passwordModal');
-        const passwordInput = document.getElementById('passwordInput');
-        const confirmPassword = document.getElementById('confirmPassword');
-        const cancelPassword = document.getElementById('cancelPassword');
-        const profileImage = document.getElementById('profileImage');
-        const profileName = document.getElementById('profileName');
-        const aboutContent = document.getElementById('aboutContent');
-        const linkedinBtn = document.getElementById('linkedinBtn');
-        const githubBtn = document.getElementById('githubBtn');
-        const whatsappBtn = document.getElementById('whatsappBtn');
-        const resumeBtn = document.getElementById('resumeBtn');
-        const projectsGrid = document.getElementById('projectsGrid');
-        const addProjectBtn = document.getElementById('addProjectBtn');
+        // DOM Elements
+        const editModeBtn = document.getElementById('edit-mode-btn');
+        const profilePic = document.getElementById('profile-pic');
+        const profileUpload = document.getElementById('profile-upload');
+        const userName = document.getElementById('user-name');
+        const socialLinksContainer = document.getElementById('social-links');
+        const resumeLink = document.getElementById('resume-link');
+        const resumeUpload = document.getElementById('resume-upload');
+        const projectsContainer = document.getElementById('projects-container');
+        const addProjectBtn = document.getElementById('add-project-btn');
+        const projectModal = document.getElementById('project-modal');
+        const socialModal = document.getElementById('social-modal');
+        const passwordModal = document.getElementById('password-modal');
+        const closeModalBtns = document.querySelectorAll('.close-modal');
+        const cancelProjectBtn = document.getElementById('cancel-project');
+        const cancelSocialBtn = document.getElementById('cancel-social');
+        const cancelPasswordBtn = document.getElementById('cancel-password');
+        const confirmPasswordBtn = document.getElementById('confirm-password');
+        const passwordInput = document.getElementById('password');
+        const passwordError = document.getElementById('password-error');
+        const projectForm = document.getElementById('project-form');
+        const socialForm = document.getElementById('social-form');
+        const currentYear = document.getElementById('current-year');
 
-        // Senha para edição
-        const EDIT_PASSWORD = "123";
+        // State variables
         let editMode = false;
+        let currentEditingProjectId = null;
+        let currentEditingSocialId = null;
+        const PASSWORD = '123';
 
-        // Carrega os dados do Firebase
-        function loadData() {
-            showLoading();
+        // Platform icons
+        const platformIcons = {
+            linkedin: 'fab fa-linkedin',
+            github: 'fab fa-github',
+            whatsapp: 'fab fa-whatsapp',
+            other: 'fas fa-link'
+        };
+
+        // Platform names
+        const platformNames = {
+            linkedin: 'LinkedIn',
+            github: 'GitHub',
+            whatsapp: 'WhatsApp',
+            other: 'Link'
+        };
+
+        // Initialize the app
+        function init() {
+            // Set current year in footer
+            currentYear.textContent = new Date().getFullYear();
             
-            database.ref('portfolio').once('value').then((snapshot) => {
+            // Load data from Firebase
+            loadData();
+            
+            // Event listeners
+            editModeBtn.addEventListener('click', toggleEditMode);
+            profileUpload.addEventListener('change', handleProfilePicUpload);
+            resumeLink.addEventListener('click', handleResumeDownload);
+            resumeUpload.addEventListener('change', handleResumeUpload);
+            addProjectBtn.addEventListener('click', openAddProjectModal);
+            
+            closeModalBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    projectModal.style.display = 'none';
+                    socialModal.style.display = 'none';
+                    passwordModal.style.display = 'none';
+                });
+            });
+            
+            cancelProjectBtn.addEventListener('click', () => {
+                projectModal.style.display = 'none';
+            });
+            
+            cancelSocialBtn.addEventListener('click', () => {
+                socialModal.style.display = 'none';
+            });
+            
+            cancelPasswordBtn.addEventListener('click', () => {
+                passwordModal.style.display = 'none';
+                passwordInput.value = '';
+                passwordError.style.display = 'none';
+            });
+            
+            confirmPasswordBtn.addEventListener('click', verifyPassword);
+            
+            projectForm.addEventListener('submit', handleProjectSubmit);
+            socialForm.addEventListener('submit', handleSocialSubmit);
+            
+            document.getElementById('project-image').addEventListener('change', function(e) {
+                const preview = document.getElementById('project-image-preview');
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
+        }
+
+        // Load data from Firebase
+        function loadData() {
+            // Load profile data
+            firebase.database().ref('profile').once('value').then(snapshot => {
                 const data = snapshot.val();
                 if (data) {
-                    // Carrega dados do perfil
-                    if (data.profile) {
-                        if (data.profile.name) profileName.textContent = data.profile.name;
-                        if (data.profile.about) aboutContent.textContent = data.profile.about;
-                        if (data.profile.imageUrl) {
-                            profileImage.src = data.profile.imageUrl;
-                            profileImage.onerror = () => {
-                                profileImage.src = "https://via.placeholder.com/300";
-                            };
-                        }
+                    if (data.photoUrl) {
+                        profilePic.src = data.photoUrl;
                     }
-
-                    // Carrega links sociais
-                    if (data.socialLinks) {
-                        if (data.socialLinks.linkedin) linkedinBtn.href = data.socialLinks.linkedin;
-                        if (data.socialLinks.github) githubBtn.href = data.socialLinks.github;
-                        if (data.socialLinks.whatsapp) whatsappBtn.href = data.socialLinks.whatsapp;
-                        if (data.socialLinks.resume) resumeBtn.href = data.socialLinks.resume;
+                    if (data.name) {
+                        userName.textContent = data.name;
                     }
-
-                    // Carrega projetos
-                    if (data.projects && data.projects.length > 0) {
-                        projectsGrid.innerHTML = '';
-                        data.projects.forEach((project, index) => {
-                            addProjectToUI(project, index);
-                        });
+                    if (data.resumeUrl) {
+                        resumeLink.href = data.resumeUrl;
                     }
                 }
-                hideLoading();
-            }).catch(error => {
-                console.error("Erro ao carregar dados:", error);
-                hideLoading();
+            });
+            
+            // Load social links
+            firebase.database().ref('socialLinks').once('value').then(snapshot => {
+                const data = snapshot.val();
+                socialLinksContainer.innerHTML = '';
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        addSocialLinkToDOM(key, data[key]);
+                    });
+                }
+                // Add "Add Link" button in edit mode
+                if (editMode) {
+                    addAddSocialLinkButton();
+                }
+            });
+            
+            // Load projects
+            firebase.database().ref('projects').once('value').then(snapshot => {
+                const data = snapshot.val();
+                // Clear projects except the add button
+                projectsContainer.innerHTML = '';
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        addProjectToDOM(key, data[key]);
+                    });
+                }
+                // Add "Add Project" button
+                projectsContainer.appendChild(addProjectBtn);
             });
         }
 
-        // Mostra estado de carregamento
-        function showLoading() {
-            document.body.classList.add('loading');
+        // Toggle edit mode
+        function toggleEditMode() {
+            if (!editMode) {
+                // Show password modal
+                passwordModal.style.display = 'flex';
+            } else {
+                // Exit edit mode
+                editMode = false;
+                document.body.classList.remove('edit-mode');
+                editModeBtn.textContent = 'Editar Página';
+                
+                // Remove "Add Link" button
+                const addLinkBtn = document.querySelector('.add-social-link');
+                if (addLinkBtn) {
+                    addLinkBtn.remove();
+                }
+                
+                // Hide edit buttons
+                document.querySelectorAll('.edit-project-btn, .delete-project-btn').forEach(btn => {
+                    btn.style.display = 'none';
+                });
+            }
         }
 
-        // Esconde estado de carregamento
-        function hideLoading() {
-            document.body.classList.remove('loading');
+        // Verify password
+        function verifyPassword() {
+            if (passwordInput.value === PASSWORD) {
+                // Correct password
+                editMode = true;
+                document.body.classList.add('edit-mode');
+                editModeBtn.textContent = 'Sair do Modo Edição';
+                passwordModal.style.display = 'none';
+                passwordInput.value = '';
+                passwordError.style.display = 'none';
+                
+                // Add "Add Link" button
+                addAddSocialLinkButton();
+                
+                // Show edit buttons
+                document.querySelectorAll('.edit-project-btn, .delete-project-btn').forEach(btn => {
+                    btn.style.display = 'block';
+                });
+            } else {
+                // Wrong password
+                passwordError.style.display = 'block';
+            }
         }
 
-        // Adiciona um projeto à interface
-        function addProjectToUI(projectData, index) {
+        // Handle profile picture upload
+        function handleProfilePicUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profilePic.src = e.target.result;
+                    // Save to Firebase
+                    saveProfilePhoto(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Save profile photo to Firebase
+        function saveProfilePhoto(photoUrl) {
+            firebase.database().ref('profile/photoUrl').set(photoUrl);
+        }
+
+        // Handle resume download/upload
+        function handleResumeDownload(e) {
+            if (editMode) {
+                e.preventDefault();
+                resumeUpload.click();
+            }
+        }
+
+        function handleResumeUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // In a real app, you would upload this file to storage
+                // For this example, we'll just save the file name
+                const resumeUrl = URL.createObjectURL(file);
+                resumeLink.href = resumeUrl;
+                firebase.database().ref('profile/resumeUrl').set(resumeUrl);
+            }
+        }
+
+        // Add social link to DOM
+        function addSocialLinkToDOM(id, linkData) {
+            const socialLink = document.createElement('a');
+            socialLink.className = 'social-link';
+            socialLink.href = linkData.url;
+            socialLink.target = '_blank';
+            
+            const icon = document.createElement('i');
+            icon.className = platformIcons[linkData.platform] || platformIcons.other;
+            socialLink.appendChild(icon);
+            
+            const text = document.createElement('span');
+            text.textContent = platformNames[linkData.platform] || 'Link';
+            socialLink.appendChild(text);
+            
+            if (editMode) {
+                const editBtn = document.createElement('button');
+                editBtn.className = 'edit-social-btn';
+                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                editBtn.style.position = 'absolute';
+                editBtn.style.right = '10px';
+                editBtn.style.background = 'none';
+                editBtn.style.border = 'none';
+                editBtn.style.color = 'white';
+                editBtn.style.cursor = 'pointer';
+                editBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openEditSocialModal(id, linkData);
+                });
+                socialLink.appendChild(editBtn);
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-social-btn';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.style.position = 'absolute';
+                deleteBtn.style.right = '40px';
+                deleteBtn.style.background = 'none';
+                deleteBtn.style.border = 'none';
+                deleteBtn.style.color = 'white';
+                deleteBtn.style.cursor = 'pointer';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (confirm('Tem certeza que deseja excluir este link?')) {
+                        firebase.database().ref(`socialLinks/${id}`).remove();
+                        socialLink.remove();
+                    }
+                });
+                socialLink.appendChild(deleteBtn);
+            }
+            
+            socialLinksContainer.appendChild(socialLink);
+        }
+
+        // Add "Add Link" button
+        function addAddSocialLinkButton() {
+            const addLinkBtn = document.createElement('div');
+            addLinkBtn.className = 'social-link add-social-link';
+            addLinkBtn.style.justifyContent = 'center';
+            addLinkBtn.style.cursor = 'pointer';
+            
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-plus';
+            addLinkBtn.appendChild(icon);
+            
+            const text = document.createElement('span');
+            text.textContent = 'Adicionar Link';
+            text.style.marginLeft = '10px';
+            addLinkBtn.appendChild(text);
+            
+            addLinkBtn.addEventListener('click', () => {
+                openAddSocialModal();
+            });
+            
+            socialLinksContainer.appendChild(addLinkBtn);
+        }
+
+        // Open add social modal
+        function openAddSocialModal() {
+            currentEditingSocialId = null;
+            document.getElementById('social-platform').value = '';
+            document.getElementById('social-url').value = '';
+            document.getElementById('modal-title').textContent = 'Adicionar Link';
+            socialModal.style.display = 'flex';
+        }
+
+        // Open edit social modal
+        function openEditSocialModal(id, linkData) {
+            currentEditingSocialId = id;
+            document.getElementById('social-platform').value = linkData.platform;
+            document.getElementById('social-url').value = linkData.url;
+            document.getElementById('modal-title').textContent = 'Editar Link';
+            socialModal.style.display = 'flex';
+        }
+
+        // Handle social form submit
+        function handleSocialSubmit(e) {
+            e.preventDefault();
+            
+            const platform = document.getElementById('social-platform').value;
+            const url = document.getElementById('social-url').value;
+            
+            const linkData = {
+                platform,
+                url
+            };
+            
+            if (currentEditingSocialId) {
+                // Update existing link
+                firebase.database().ref(`socialLinks/${currentEditingSocialId}`).update(linkData);
+            } else {
+                // Add new link
+                const newLinkRef = firebase.database().ref('socialLinks').push();
+                newLinkRef.set(linkData);
+            }
+            
+            socialModal.style.display = 'none';
+            loadData(); // Refresh the view
+        }
+
+        // Open add project modal
+        function openAddProjectModal() {
+            currentEditingProjectId = null;
+            document.getElementById('project-id').value = '';
+            document.getElementById('project-name').value = '';
+            document.getElementById('project-description').value = '';
+            document.getElementById('project-url').value = '';
+            document.getElementById('project-image').value = '';
+            document.getElementById('project-image-preview').style.display = 'none';
+            document.getElementById('modal-title').textContent = 'Adicionar Projeto';
+            projectModal.style.display = 'flex';
+        }
+
+        // Open edit project modal
+        function openEditProjectModal(id, projectData) {
+            currentEditingProjectId = id;
+            document.getElementById('project-id').value = id;
+            document.getElementById('project-name').value = projectData.name || '';
+            document.getElementById('project-description').value = projectData.description || '';
+            document.getElementById('project-url').value = projectData.url || '';
+            
+            const preview = document.getElementById('project-image-preview');
+            if (projectData.imageUrl) {
+                preview.src = projectData.imageUrl;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+            
+            document.getElementById('modal-title').textContent = 'Editar Projeto';
+            projectModal.style.display = 'flex';
+        }
+
+        // Handle project form submit
+        function handleProjectSubmit(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('project-id').value;
+            const name = document.getElementById('project-name').value;
+            const description = document.getElementById('project-description').value;
+            const url = document.getElementById('project-url').value;
+            const imageFile = document.getElementById('project-image').files[0];
+            
+            const projectData = {
+                name,
+                description,
+                url
+            };
+            
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    projectData.imageUrl = e.target.result;
+                    saveProject(id, projectData);
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                // Keep existing image if no new image is uploaded
+                if (currentEditingProjectId) {
+                    firebase.database().ref(`projects/${currentEditingProjectId}/imageUrl`).once('value').then(snapshot => {
+                        projectData.imageUrl = snapshot.val();
+                        saveProject(id, projectData);
+                    });
+                } else {
+                    saveProject(id, projectData);
+                }
+            }
+        }
+
+        // Save project to Firebase
+        function saveProject(id, projectData) {
+            if (id) {
+                // Update existing project
+                firebase.database().ref(`projects/${id}`).update(projectData);
+            } else {
+                // Add new project
+                const newProjectRef = firebase.database().ref('projects').push();
+                newProjectRef.set(projectData);
+            }
+            
+            projectModal.style.display = 'none';
+            loadData(); // Refresh the view
+        }
+
+        // Add project to DOM
+        function addProjectToDOM(id, projectData) {
             const projectCard = document.createElement('div');
             projectCard.className = 'project-card';
-            projectCard.dataset.index = index;
             
-            projectCard.innerHTML = `
-                <div class="project-image-container">
-                    <img src="${projectData.imageUrl || 'https://via.placeholder.com/600x400'}" 
-                         alt="${projectData.title || 'Projeto'}" 
-                         class="project-image editable" 
-                         data-editable-type="image">
-                    <button class="delete-project" data-index="${index}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-                <div class="project-info">
-                    <h3 class="project-title editable">${projectData.title || 'Novo Projeto'}</h3>
-                    <p class="project-description editable">${projectData.description || 'Descrição do projeto'}</p>
-                    <a href="${projectData.link || '#'}" 
-                       class="project-link editable" 
-                       data-editable-type="link">
-                       <i class="fas fa-external-link-alt"></i> Ver Projeto
-                    </a>
-                </div>
-            `;
+            const projectImage = document.createElement('img');
+            projectImage.className = 'project-image';
+            projectImage.src = projectData.imageUrl || 'https://via.placeholder.com/300x180?text=Projeto';
+            projectImage.alt = projectData.name;
+            projectCard.appendChild(projectImage);
             
-            projectsGrid.appendChild(projectCard);
-            setupProjectCardEvents(projectCard);
-        }
-
-        // Configura eventos para um cartão de projeto
-        function setupProjectCardEvents(projectCard) {
+            const projectInfo = document.createElement('div');
+            projectInfo.className = 'project-info';
+            
+            const projectTitle = document.createElement('h3');
+            projectTitle.className = 'project-title';
+            projectTitle.textContent = projectData.name;
+            projectInfo.appendChild(projectTitle);
+            
+            const projectDescription = document.createElement('p');
+            projectDescription.className = 'project-description';
+            projectDescription.textContent = projectData.description;
+            projectInfo.appendChild(projectDescription);
+            
+            if (projectData.url) {
+                const projectLink = document.createElement('a');
+                projectLink.className = 'project-link';
+                projectLink.href = projectData.url;
+                projectLink.target = '_blank';
+                projectLink.textContent = 'Ver Projeto';
+                projectInfo.appendChild(projectLink);
+            }
+            
+            projectCard.appendChild(projectInfo);
+            
             if (editMode) {
-                const projectImage = projectCard.querySelector('.project-image');
-                projectImage.addEventListener('click', function() {
-                    uploadProjectImage(this);
+                const editBtn = document.createElement('button');
+                editBtn.className = 'edit-project-btn';
+                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                editBtn.addEventListener('click', () => {
+                    openEditProjectModal(id, projectData);
                 });
+                projectCard.appendChild(editBtn);
                 
-                const deleteBtn = projectCard.querySelector('.delete-project');
-                deleteBtn.addEventListener('click', function() {
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-project-btn';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.addEventListener('click', () => {
                     if (confirm('Tem certeza que deseja excluir este projeto?')) {
+                        firebase.database().ref(`projects/${id}`).remove();
                         projectCard.remove();
-                        saveData();
                     }
                 });
+                projectCard.appendChild(deleteBtn);
             }
+            
+            projectsContainer.insertBefore(projectCard, addProjectBtn);
         }
 
-        // Upload da imagem de perfil
-        function uploadProfileImage() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            
-            input.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                try {
-                    // Mostra feedback visual de carregamento
-                    profileImage.classList.add('loading');
-                    
-                    // Faz upload para o Firebase Storage
-                    const fileName = `profile/profile_${Date.now()}_${file.name}`;
-                    const storageRef = storage.ref(fileName);
-                    const uploadTask = storageRef.put(file);
-                    
-                    // Aguarda o upload completar
-                    await new Promise((resolve, reject) => {
-                        uploadTask.on('state_changed',
-                            null,
-                            (error) => reject(error),
-                            () => resolve()
-                        );
-                    });
-                    
-                    // Obtém a URL de download
-                    const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                    
-                    // Atualiza a imagem na interface
-                    profileImage.src = downloadURL;
-                    profileImage.onerror = () => {
-                        profileImage.src = "https://via.placeholder.com/300";
-                    };
-                    
-                    // Salva no banco de dados
-                    await saveData();
-                } catch (error) {
-                    console.error("Erro no upload:", error);
-                    alert("Erro ao fazer upload da imagem");
-                } finally {
-                    profileImage.classList.remove('loading');
-                }
-            };
-            
-            input.click();
-        }
-
-        // Upload da imagem de um projeto
-        function uploadProjectImage(imgElement) {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            
-            input.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                const projectCard = imgElement.closest('.project-card');
-                
-                try {
-                    // Mostra feedback visual de carregamento
-                    imgElement.classList.add('loading');
-                    
-                    // Faz upload para o Firebase Storage
-                    const fileName = `projects/project_${Date.now()}_${file.name}`;
-                    const storageRef = storage.ref(fileName);
-                    const uploadTask = storageRef.put(file);
-                    
-                    // Aguarda o upload completar
-                    await new Promise((resolve, reject) => {
-                        uploadTask.on('state_changed',
-                            null,
-                            (error) => reject(error),
-                            () => resolve()
-                        );
-                    });
-                    
-                    // Obtém a URL de download
-                    const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                    
-                    // Atualiza a imagem na interface
-                    imgElement.src = downloadURL;
-                    imgElement.onerror = () => {
-                        imgElement.src = "https://via.placeholder.com/600x400";
-                    };
-                    
-                    // Salva no banco de dados
-                    await saveData();
-                } catch (error) {
-                    console.error("Erro no upload:", error);
-                    alert("Erro ao fazer upload da imagem");
-                } finally {
-                    imgElement.classList.remove('loading');
-                }
-            };
-            
-            input.click();
-        }
-
-        // Salva os dados no Firebase
-        async function saveData() {
-            try {
-                const profileData = {
-                    name: profileName.textContent,
-                    about: aboutContent.textContent,
-                    imageUrl: profileImage.src
-                };
-
-                const socialLinksData = {
-                    linkedin: linkedinBtn.href,
-                    github: githubBtn.href,
-                    whatsapp: whatsappBtn.href,
-                    resume: resumeBtn.href
-                };
-
-                const projectsData = [];
-                document.querySelectorAll('.project-card').forEach(card => {
-                    projectsData.push({
-                        title: card.querySelector('.project-title').textContent,
-                        description: card.querySelector('.project-description').textContent,
-                        imageUrl: card.querySelector('.project-image').src,
-                        link: card.querySelector('.project-link').href
-                    });
-                });
-
-                await database.ref('portfolio').set({
-                    profile: profileData,
-                    socialLinks: socialLinksData,
-                    projects: projectsData
-                });
-                
-                console.log("Dados salvos com sucesso!");
-            } catch (error) {
-                console.error("Erro ao salvar dados:", error);
-                alert("Erro ao salvar as alterações. Por favor, tente novamente.");
-            }
-        }
-
-        // Ativa/desativa o modo de edição
-        function toggleEditMode() {
-            editMode = !editMode;
-            document.body.classList.toggle('edit-mode', editMode);
-            
-            // Habilita/desabilita a edição dos elementos
-            document.querySelectorAll('.editable').forEach(element => {
-                element.contentEditable = editMode;
-                
-                // Para elementos de link, mostra o href quando em modo de edição
-                if (element.dataset.editableType === 'link') {
-                    if (editMode) {
-                        element.setAttribute('data-original-href', element.href);
-                        element.href = 'javascript:void(0);';
-                        element.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            const newLink = prompt("Digite o novo link:", this.getAttribute('data-original-href'));
-                            if (newLink !== null) {
-                                this.setAttribute('data-original-href', newLink);
-                                saveData();
-                            }
-                        });
-                    } else {
-                        const originalHref = element.getAttribute('data-original-href');
-                        if (originalHref) {
-                            element.href = originalHref;
-                        }
-                    }
-                }
-            });
-
-            // Configura eventos específicos do modo de edição
-            if (editMode) {
-                // Foto de perfil
-                profileImage.addEventListener('click', uploadProfileImage);
-                
-                // Projetos existentes
-                document.querySelectorAll('.project-card').forEach(card => {
-                    setupProjectCardEvents(card);
-                });
-                
-                // Botão de adicionar projeto
-                addProjectBtn.addEventListener('click', addNewProject);
-                
-                // Configura eventos para salvar quando o conteúdo é alterado
-                document.querySelectorAll('.editable').forEach(element => {
-                    if (element.dataset.editableType !== 'link' && element.dataset.editableType !== 'image') {
-                        element.addEventListener('blur', saveData);
-                    }
-                });
-            } else {
-                // Remove eventos do modo de edição
-                profileImage.removeEventListener('click', uploadProfileImage);
-                addProjectBtn.removeEventListener('click', addNewProject);
-                
-                document.querySelectorAll('.editable').forEach(element => {
-                    if (element.dataset.editableType !== 'link' && element.dataset.editableType !== 'image') {
-                        element.removeEventListener('blur', saveData);
-                    }
-                });
-            }
-        }
-
-        // Adiciona um novo projeto
-        function addNewProject() {
-            const newProjectData = {
-                title: "Novo Projeto",
-                description: "Descrição do novo projeto",
-                imageUrl: "https://via.placeholder.com/600x400",
-                link: "#"
-            };
-            
-            const projectIndex = document.querySelectorAll('.project-card').length;
-            addProjectToUI(newProjectData, projectIndex);
-            saveData();
-        }
-
-        // Event Listeners
-        editBtn.addEventListener('click', () => {
-            if (!editMode) {
-                passwordModal.style.display = 'flex';
-                passwordInput.focus();
-            } else {
-                toggleEditMode();
-            }
-        });
-
-        confirmPassword.addEventListener('click', () => {
-            if (passwordInput.value === EDIT_PASSWORD) {
-                passwordModal.style.display = 'none';
-                passwordInput.value = '';
-                toggleEditMode();
-            } else {
-                alert('Senha incorreta!');
-                passwordInput.value = '';
-            }
-        });
-
-        cancelPassword.addEventListener('click', () => {
-            passwordModal.style.display = 'none';
-            passwordInput.value = '';
-        });
-
-        // Fecha o modal ao pressionar Esc ou Enter
-        passwordInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Escape') {
-                passwordModal.style.display = 'none';
-                passwordInput.value = '';
-            } else if (e.key === 'Enter') {
-                if (passwordInput.value === EDIT_PASSWORD) {
-                    passwordModal.style.display = 'none';
-                    passwordInput.value = '';
-                    toggleEditMode();
-                } else {
-                    alert('Senha incorreta!');
-                    passwordInput.value = '';
-                }
-            }
-        });
-
-        // Atualiza o ano no footer
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-
-        // Carrega os dados quando a página é carregada
-        document.addEventListener('DOMContentLoaded', loadData);
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
