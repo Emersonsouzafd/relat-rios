@@ -235,6 +235,36 @@
             color: var(--primary-color);
         }
 
+        .project-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .edit-project-btn, .delete-project-btn {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .edit-project-btn:hover {
+            background-color: #3498db;
+        }
+
+        .delete-project-btn:hover {
+            background-color: #e74c3c;
+        }
+
         /* Edit Mode */
         .edit-mode {
             position: fixed;
@@ -526,24 +556,7 @@
             <h2 class="section-title">PROJETOS</h2>
             
             <div class="projects-container" id="projects-container">
-                <!-- Project cards will be added here -->
-                <div class="project-card">
-                    <img src="https://via.placeholder.com/300x180" alt="Projeto 1" class="project-image">
-                    <div class="project-info">
-                        <h3 class="project-title">Projeto Exemplo 1</h3>
-                        <p class="project-description">Descrição do projeto exemplo. Aqui você pode detalhar o que foi feito, tecnologias utilizadas e objetivos alcançados.</p>
-                        <a href="#" class="project-link">Ver Projeto</a>
-                    </div>
-                </div>
-                
-                <div class="project-card">
-                    <img src="https://via.placeholder.com/300x180" alt="Projeto 2" class="project-image">
-                    <div class="project-info">
-                        <h3 class="project-title">Projeto Exemplo 2</h3>
-                        <p class="project-description">Outro projeto de exemplo com uma descrição mais longa para demonstrar como o texto se comporta dentro do card de projeto.</p>
-                        <a href="#" class="project-link">Ver Projeto</a>
-                    </div>
-                </div>
+                <!-- Project cards will be added dynamically -->
             </div>
         </div>
         
@@ -626,7 +639,8 @@
         </div>
         
         <div class="edit-panel" id="project-panel">
-            <h3 class="edit-panel-title">Adicionar Novo Projeto</h3>
+            <h3 class="edit-panel-title" id="project-panel-title">Adicionar Novo Projeto</h3>
+            <input type="hidden" id="editing-project-index" value="-1">
             <div class="edit-field">
                 <label for="project-title">Título do Projeto:</label>
                 <input type="text" id="project-title" class="edit-input" placeholder="Título do projeto">
@@ -667,12 +681,14 @@
         const profilePicPreview = document.getElementById('profile-pic-preview');
         const saveProfilePic = document.getElementById('save-profile-pic');
         const cancelProfilePic = document.getElementById('cancel-profile-pic');
+        const profilePic = document.getElementById('profile-pic');
         
         // About elements
         const aboutPanel = document.getElementById('about-panel');
         const aboutText = document.getElementById('about-text');
         const saveAbout = document.getElementById('save-about');
         const cancelAbout = document.getElementById('cancel-about');
+        const aboutContent = document.getElementById('about-content');
         
         // Links elements
         const linksPanel = document.getElementById('links-panel');
@@ -681,15 +697,20 @@
         const whatsappLink = document.getElementById('whatsapp-link');
         const saveLinks = document.getElementById('save-links');
         const cancelLinks = document.getElementById('cancel-links');
+        const linkedinBtn = document.getElementById('linkedin-btn');
+        const githubBtn = document.getElementById('github-btn');
+        const whatsappBtn = document.getElementById('whatsapp-btn');
         
         // Resume elements
         const resumePanel = document.getElementById('resume-panel');
         const resumeFile = document.getElementById('resume-file');
         const saveResume = document.getElementById('save-resume');
         const cancelResume = document.getElementById('cancel-resume');
+        const resumeBtn = document.getElementById('resume-btn');
         
         // Project elements
         const projectPanel = document.getElementById('project-panel');
+        const projectPanelTitle = document.getElementById('project-panel-title');
         const projectTitle = document.getElementById('project-title');
         const projectDescription = document.getElementById('project-description');
         const projectImageFile = document.getElementById('project-image-file');
@@ -697,15 +718,131 @@
         const projectLink = document.getElementById('project-link');
         const saveProject = document.getElementById('save-project');
         const cancelProject = document.getElementById('cancel-project');
+        const projectsContainer = document.getElementById('projects-container');
+        const editingProjectIndex = document.getElementById('editing-project-index');
         
         // Correct password
         const CORRECT_PASSWORD = '123';
         let isAuthenticated = false;
         
+        // Data storage
+        let portfolioData = {
+            profilePic: 'https://via.placeholder.com/150',
+            aboutText: 'Profissional dedicado e apaixonado por tecnologia. Com experiência em desenvolvimento web e soluções inovadoras, sempre buscando aprender e compartilhar conhecimento.',
+            links: {
+                linkedin: '#',
+                github: '#',
+                whatsapp: '#'
+            },
+            resume: null,
+            projects: []
+        };
+        
+        // Initialize the page
+        function initPortfolio() {
+            // Load saved data from localStorage
+            const savedData = localStorage.getItem('portfolioData');
+            if (savedData) {
+                portfolioData = JSON.parse(savedData);
+            }
+            
+            // Apply the loaded data
+            profilePic.src = portfolioData.profilePic;
+            aboutContent.innerText = portfolioData.aboutText;
+            linkedinBtn.href = portfolioData.links.linkedin;
+            githubBtn.href = portfolioData.links.github;
+            whatsappBtn.href = portfolioData.links.whatsapp;
+            
+            // Load projects
+            portfolioData.projects.forEach((project, index) => {
+                addProjectToDOM(project, index);
+            });
+            
+            // Set resume download
+            if (portfolioData.resume) {
+                resumeBtn.href = portfolioData.resume;
+                resumeBtn.download = 'Curriculo_Emerson_Flores.pdf';
+            }
+        }
+        
+        // Add project to DOM
+        function addProjectToDOM(project, index) {
+            const projectCard = document.createElement('div');
+            projectCard.className = 'project-card';
+            projectCard.innerHTML = `
+                <div class="project-actions">
+                    <button class="edit-project-btn" data-index="${index}"><i class="fas fa-edit"></i></button>
+                    <button class="delete-project-btn" data-index="${index}"><i class="fas fa-trash"></i></button>
+                </div>
+                <img src="${project.image}" alt="${project.title}" class="project-image">
+                <div class="project-info">
+                    <h3 class="project-title">${project.title}</h3>
+                    <p class="project-description">${project.description}</p>
+                    <a href="${project.link || '#'}" class="project-link">Ver Projeto</a>
+                </div>
+            `;
+            projectsContainer.appendChild(projectCard);
+            
+            // Add event listeners for edit and delete buttons
+            projectCard.querySelector('.edit-project-btn').addEventListener('click', (e) => {
+                if (isAuthenticated) {
+                    editProject(index);
+                }
+            });
+            
+            projectCard.querySelector('.delete-project-btn').addEventListener('click', (e) => {
+                if (isAuthenticated) {
+                    deleteProject(index);
+                }
+            });
+        }
+        
+        // Edit project
+        function editProject(index) {
+            const project = portfolioData.projects[index];
+            projectPanelTitle.textContent = 'Editar Projeto';
+            editingProjectIndex.value = index;
+            projectTitle.value = project.title;
+            projectDescription.value = project.description;
+            projectLink.value = project.link || '';
+            
+            if (project.image) {
+                projectImagePreview.src = project.image;
+                projectImagePreview.style.display = 'block';
+            } else {
+                projectImagePreview.style.display = 'none';
+            }
+            
+            showPanel(projectPanel);
+        }
+        
+        // Delete project
+        function deleteProject(index) {
+            if (confirm('Tem certeza que deseja excluir este projeto?')) {
+                portfolioData.projects.splice(index, 1);
+                saveData();
+                refreshProjects();
+            }
+        }
+        
+        // Refresh projects list
+        function refreshProjects() {
+            projectsContainer.innerHTML = '';
+            portfolioData.projects.forEach((project, index) => {
+                addProjectToDOM(project, index);
+            });
+        }
+        
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
+        }
+        
         // Toggle edit panel
         editBtn.addEventListener('click', () => {
             if (!isAuthenticated) {
                 showPanel(passwordPanel);
+                passwordInput.focus();
             } else {
                 // If already authenticated, show the links panel by default
                 showPanel(linksPanel);
@@ -718,6 +855,7 @@
                 isAuthenticated = true;
                 hidePanel(passwordPanel);
                 showPanel(linksPanel);
+                passwordInput.value = '';
             } else {
                 alert('Senha incorreta!');
                 passwordInput.value = '';
@@ -726,12 +864,13 @@
         
         cancelPassword.addEventListener('click', () => {
             hidePanel(passwordPanel);
+            passwordInput.value = '';
         });
         
         // Profile pic editing
-        document.getElementById('profile-pic').addEventListener('click', (e) => {
+        profilePic.addEventListener('click', (e) => {
             if (isAuthenticated) {
-                profilePicPreview.src = e.target.src;
+                profilePicPreview.src = profilePic.src;
                 showPanel(profilePicPanel);
             }
         });
@@ -748,7 +887,9 @@
         });
         
         saveProfilePic.addEventListener('click', () => {
-            document.getElementById('profile-pic').src = profilePicPreview.src;
+            portfolioData.profilePic = profilePicPreview.src;
+            profilePic.src = profilePicPreview.src;
+            saveData();
             hidePanel(profilePicPanel);
             alert('Foto de perfil atualizada com sucesso!');
         });
@@ -760,13 +901,15 @@
         // About editing
         document.getElementById('about-section').addEventListener('click', (e) => {
             if (isAuthenticated) {
-                aboutText.value = document.getElementById('about-content').innerText;
+                aboutText.value = portfolioData.aboutText;
                 showPanel(aboutPanel);
             }
         });
         
         saveAbout.addEventListener('click', () => {
-            document.getElementById('about-content').innerText = aboutText.value;
+            portfolioData.aboutText = aboutText.value;
+            aboutContent.innerText = aboutText.value;
+            saveData();
             hidePanel(aboutPanel);
             alert('Texto sobre atualizado com sucesso!');
         });
@@ -777,9 +920,17 @@
         
         // Links editing
         saveLinks.addEventListener('click', () => {
-            document.getElementById('linkedin-btn').href = linkedinLink.value || '#';
-            document.getElementById('github-btn').href = githubLink.value || '#';
-            document.getElementById('whatsapp-btn').href = whatsappLink.value || '#';
+            portfolioData.links = {
+                linkedin: linkedinLink.value || '#',
+                github: githubLink.value || '#',
+                whatsapp: whatsappLink.value || '#'
+            };
+            
+            linkedinBtn.href = portfolioData.links.linkedin;
+            githubBtn.href = portfolioData.links.github;
+            whatsappBtn.href = portfolioData.links.whatsapp;
+            
+            saveData();
             hidePanel(linksPanel);
             alert('Links atualizados com sucesso!');
         });
@@ -789,7 +940,7 @@
         });
         
         // Resume editing
-        document.getElementById('resume-btn').addEventListener('click', (e) => {
+        resumeBtn.addEventListener('click', (e) => {
             if (isAuthenticated && e.target.tagName !== 'A') {
                 e.preventDefault();
                 showPanel(resumePanel);
@@ -797,10 +948,18 @@
         });
         
         saveResume.addEventListener('click', () => {
-            if (resumeFile.files[0]) {
-                // In a real implementation, you would upload this file to a server
-                alert('Currículo atualizado com sucesso! (Simulação - em um sistema real, o arquivo seria enviado ao servidor)');
-                hidePanel(resumePanel);
+            const file = resumeFile.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    portfolioData.resume = event.target.result;
+                    resumeBtn.href = event.target.result;
+                    resumeBtn.download = file.name || 'Curriculo_Emerson_Flores.pdf';
+                    saveData();
+                    hidePanel(resumePanel);
+                    alert('Currículo atualizado com sucesso!');
+                };
+                reader.readAsDataURL(file);
             } else {
                 alert('Por favor, selecione um arquivo PDF.');
             }
@@ -817,26 +976,27 @@
                 return;
             }
             
-            const projectsContainer = document.getElementById('projects-container');
-            const newProject = document.createElement('div');
-            newProject.className = 'project-card';
+            const projectData = {
+                title: projectTitle.value,
+                description: projectDescription.value,
+                link: projectLink.value || '#',
+                image: projectImagePreview.src || 'https://via.placeholder.com/300x180'
+            };
             
-            const imageSrc = projectImagePreview.src || 'https://via.placeholder.com/300x180';
-            const projectLinkValue = projectLink.value || '#';
+            const index = parseInt(editingProjectIndex.value);
+            if (index >= 0) {
+                // Editing existing project
+                portfolioData.projects[index] = projectData;
+            } else {
+                // Adding new project
+                portfolioData.projects.push(projectData);
+            }
             
-            newProject.innerHTML = `
-                <img src="${imageSrc}" alt="${projectTitle.value}" class="project-image">
-                <div class="project-info">
-                    <h3 class="project-title">${projectTitle.value}</h3>
-                    <p class="project-description">${projectDescription.value}</p>
-                    <a href="${projectLinkValue}" class="project-link">Ver Projeto</a>
-                </div>
-            `;
-            
-            projectsContainer.appendChild(newProject);
+            saveData();
+            refreshProjects();
             hidePanel(projectPanel);
             resetProjectForm();
-            alert('Projeto adicionado com sucesso!');
+            alert('Projeto salvo com sucesso!');
         });
         
         cancelProject.addEventListener('click', () => {
@@ -860,6 +1020,13 @@
         function showPanel(panel) {
             document.querySelectorAll('.edit-panel').forEach(p => p.classList.remove('show'));
             panel.classList.add('show');
+            
+            // Load current data when showing certain panels
+            if (panel === linksPanel) {
+                linkedinLink.value = portfolioData.links.linkedin;
+                githubLink.value = portfolioData.links.github;
+                whatsappLink.value = portfolioData.links.whatsapp;
+            }
         }
         
         function hidePanel(panel) {
@@ -867,6 +1034,8 @@
         }
         
         function resetProjectForm() {
+            projectPanelTitle.textContent = 'Adicionar Novo Projeto';
+            editingProjectIndex.value = '-1';
             projectTitle.value = '';
             projectDescription.value = '';
             projectImageFile.value = '';
@@ -875,10 +1044,8 @@
             projectLink.value = '';
         }
         
-        // Initialize social links with placeholder values
-        document.getElementById('linkedin-btn').href = '#';
-        document.getElementById('github-btn').href = '#';
-        document.getElementById('whatsapp-btn').href = '#';
+        // Initialize the portfolio
+        initPortfolio();
     </script>
 </body>
 </html>
