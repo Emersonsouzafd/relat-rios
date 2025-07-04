@@ -1044,4 +1044,164 @@ Digite o número da opção desejada:`);
             if (index !== null && projects) {
                 // Editar projeto existente
                 const project = projects[index];
-                project
+                projectTitle.value = project.title || '';
+                projectDescription.value = project.description || '';
+                projectLink.value = project.link || '';
+                projectIndex.value = index;
+                projectModalTitle.textContent = 'Editar Projeto';
+                currentEditingProjectIndex = index;
+                
+                if (project.imageUrl) {
+                    projectImagePreview.src = project.imageUrl;
+                    projectImagePreview.style.display = 'block';
+                }
+            } else {
+                // Novo projeto
+                projectTitle.value = '';
+                projectDescription.value = '';
+                projectLink.value = '';
+                projectIndex.value = '';
+                projectModalTitle.textContent = 'Adicionar Novo Projeto';
+                currentEditingProjectIndex = null;
+                projectImagePreview.src = '';
+                projectImagePreview.style.display = 'none';
+            }
+            
+            projectImageFile = null;
+            editProjectModal.style.display = 'flex';
+        }
+        
+        // Configura o upload da imagem do projeto
+        projectImageUploadBtn.addEventListener('click', () => {
+            projectImageUpload.click();
+        });
+        
+        projectImageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                projectImageFile = file;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    projectImagePreview.src = event.target.result;
+                    projectImagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Fecha o modal de edição de projeto
+        cancelProjectBtn.addEventListener('click', () => {
+            editProjectModal.style.display = 'none';
+            projectImageFile = null;
+            projectImagePreview.src = '';
+            projectImagePreview.style.display = 'none';
+        });
+        
+        // Salva as alterações do projeto
+        saveProjectBtn.addEventListener('click', async () => {
+            const title = projectTitle.value;
+            const description = projectDescription.value;
+            const link = projectLink.value;
+            
+            if (!title || !description) {
+                alert('Por favor, preencha pelo menos o título e a descrição do projeto.');
+                return;
+            }
+            
+            saveProjectBtn.disabled = true;
+            projectLoading.style.display = 'block';
+            
+            try {
+                let imageUrl = '';
+                
+                // Se uma nova imagem foi selecionada, faz upload
+                if (projectImageFile) {
+                    const storageRef = storage.ref(`project_images/${Date.now()}_${projectImageFile.name}`);
+                    const snapshot = await storageRef.put(projectImageFile);
+                    imageUrl = await snapshot.ref.getDownloadURL();
+                } else if (projectImagePreview.src && projectImagePreview.src.includes('http')) {
+                    // Mantém a imagem existente se não foi alterada
+                    imageUrl = projectImagePreview.src;
+                }
+                
+                // Obtém a lista atual de projetos
+                const doc = await portfolioRef.get();
+                const currentProjects = doc.data().projects || [];
+                
+                const projectData = {
+                    title,
+                    description,
+                    link
+                };
+                
+                if (imageUrl) {
+                    projectData.imageUrl = imageUrl;
+                }
+                
+                // Atualiza ou adiciona o projeto
+                if (currentEditingProjectIndex !== null) {
+                    currentProjects[currentEditingProjectIndex] = projectData;
+                } else {
+                    currentProjects.push(projectData);
+                }
+                
+                // Atualiza os dados no Firestore
+                await portfolioRef.update({
+                    projects: currentProjects
+                });
+                
+                // Atualiza a UI
+                loadPortfolioData();
+                editProjectModal.style.display = 'none';
+                projectImageFile = null;
+                projectImagePreview.src = '';
+                projectImagePreview.style.display = 'none';
+                
+                alert('Projeto salvo com sucesso!');
+            } catch (error) {
+                console.error("Erro ao salvar projeto:", error);
+                alert("Erro ao salvar o projeto. Por favor, tente novamente.");
+            } finally {
+                saveProjectBtn.disabled = false;
+                projectLoading.style.display = 'none';
+            }
+        });
+        
+        // Exclui um projeto
+        async function deleteProject(index) {
+            if (!confirm('Tem certeza que deseja excluir este projeto?')) return;
+            
+            try {
+                // Obtém a lista atual de projetos
+                const doc = await portfolioRef.get();
+                const currentProjects = doc.data().projects || [];
+                
+                // Remove o projeto
+                currentProjects.splice(index, 1);
+                
+                // Atualiza os dados no Firestore
+                await portfolioRef.update({
+                    projects: currentProjects
+                });
+                
+                // Atualiza a UI
+                loadPortfolioData();
+                
+                alert('Projeto excluído com sucesso!');
+            } catch (error) {
+                console.error("Erro ao excluir projeto:", error);
+                alert("Erro ao excluir o projeto. Por favor, tente novamente.");
+            }
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            // Atualiza o ano no rodapé
+            document.getElementById('year').textContent = new Date().getFullYear();
+            
+            // Carrega os dados do portfólio
+            loadPortfolioData();
+        });
+    </script>
+</body>
+</html>
