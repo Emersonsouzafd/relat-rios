@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfólio Profissional</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Inclua o Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -100,6 +105,8 @@
             width: 90%;
             max-width: 500px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
         .modal h2 {
@@ -118,7 +125,8 @@
         }
         
         .form-group input, 
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 0.8rem;
             border: 1px solid var(--medium-gray);
@@ -374,6 +382,57 @@
             padding: 1.5rem 0;
         }
         
+        /* Upload de Imagem */
+        .image-upload-container {
+            margin-bottom: 1rem;
+        }
+        
+        .image-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            margin-top: 1rem;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--medium-gray);
+            color: var(--text-color);
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            background: #95a5a6;
+        }
+        
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--accent-color);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         /* Responsividade */
         @media (max-width: 768px) {
             .about-content {
@@ -398,8 +457,8 @@
             <button class="edit-btn" id="editPortfolioBtn">
                 <i class="fas fa-edit"></i> Editar Portfólio
             </button>
-            <h1 id="userName">Carlos Silva</h1>
-            <p class="subtitle" id="userTitle">Desenvolvedor Full Stack | UI/UX Designer</p>
+            <h1 id="userName">Carregando...</h1>
+            <p class="subtitle" id="userTitle">Carregando...</p>
             
             <!-- Botões de Redes Sociais -->
             <div class="social-buttons">
@@ -429,10 +488,10 @@
             <h2>Sobre Mim</h2>
             <div class="about-content">
                 <div class="profile-img">
-                    <img src="https://via.placeholder.com/350" alt="Sua Foto" id="profileImage">
+                    <img src="" alt="Sua Foto" id="profileImage">
                 </div>
                 <div class="bio">
-                    <p id="aboutText">Olá! Eu sou Carlos Silva, um desenvolvedor full stack com 5 anos de experiência no mercado. Especializado em JavaScript, React, Node.js e design de interfaces, adoro criar soluções criativas e eficientes para problemas complexos. Minha abordagem combina habilidades técnicas com um olhar atento às necessidades dos usuários. Quando não estou codando, você pode me encontrar explorando novas tecnologias ou curtindo música.</p>
+                    <p id="aboutText">Carregando...</p>
                 </div>
             </div>
         </div>
@@ -443,7 +502,10 @@
         <div class="container">
             <h2>Meus Projetos</h2>
             <div class="projects-grid" id="projectsContainer">
-                <!-- Projetos serão adicionados dinamicamente aqui -->
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Carregando projetos...</p>
+                </div>
             </div>
         </div>
     </section>
@@ -459,7 +521,7 @@
     <!-- Rodapé -->
     <footer>
         <div class="container">
-            <p>&copy; <span id="year"></span> <span id="footerName">Carlos Silva</span>. Todos os direitos reservados.</p>
+            <p>&copy; <span id="year"></span> <span id="footerName">Carregando...</span>. Todos os direitos reservados.</p>
         </div>
     </footer>
     
@@ -490,13 +552,19 @@
                 <label for="editTitle">Título:</label>
                 <input type="text" id="editTitle" placeholder="Sua profissão/especialidade">
             </div>
-            <div class="form-group">
-                <label for="editImage">URL da Imagem de Perfil:</label>
-                <input type="text" id="editImage" placeholder="URL da sua foto">
+            <div class="image-upload-container">
+                <label>Foto de Perfil:</label>
+                <input type="file" id="profileImageUpload" accept="image/*" style="display: none;">
+                <button class="upload-btn" id="profileImageUploadBtn">Escolher Imagem</button>
+                <img id="profileImagePreview" class="image-preview" src="" alt="Pré-visualização">
             </div>
             <div class="form-group">
                 <label for="editAbout">Sobre:</label>
                 <textarea id="editAbout" placeholder="Fale sobre você"></textarea>
+            </div>
+            <div class="loading" id="profileLoading">
+                <div class="loading-spinner"></div>
+                <p>Salvando alterações...</p>
             </div>
             <div class="modal-btns">
                 <button class="btn btn-secondary" id="cancelProfileEditBtn">Cancelar</button>
@@ -525,6 +593,10 @@
                 <label for="editResume">Currículo:</label>
                 <input type="url" id="editResume" placeholder="URL do seu currículo (PDF)">
             </div>
+            <div class="loading" id="socialLoading">
+                <div class="loading-spinner"></div>
+                <p>Salvando alterações...</p>
+            </div>
             <div class="modal-btns">
                 <button class="btn btn-secondary" id="cancelSocialEditBtn">Cancelar</button>
                 <button class="btn btn-primary" id="saveSocialBtn">Salvar</button>
@@ -544,56 +616,55 @@
                 <label for="projectDescription">Descrição:</label>
                 <textarea id="projectDescription" placeholder="Descrição do projeto"></textarea>
             </div>
-            <div class="form-group">
-                <label for="projectImage">URL da Imagem:</label>
-                <input type="text" id="projectImage" placeholder="URL da imagem do projeto">
+            <div class="image-upload-container">
+                <label>Imagem do Projeto:</label>
+                <input type="file" id="projectImageUpload" accept="image/*" style="display: none;">
+                <button class="upload-btn" id="projectImageUploadBtn">Escolher Imagem</button>
+                <img id="projectImagePreview" class="image-preview" src="" alt="Pré-visualização">
             </div>
             <div class="form-group">
                 <label for="projectLink">Link do Projeto:</label>
                 <input type="url" id="projectLink" placeholder="URL do projeto">
             </div>
             <input type="hidden" id="projectIndex">
+            <div class="loading" id="projectLoading">
+                <div class="loading-spinner"></div>
+                <p>Salvando projeto...</p>
+            </div>
             <div class="modal-btns">
                 <button class="btn btn-secondary" id="cancelProjectBtn">Cancelar</button>
                 <button class="btn btn-primary" id="saveProjectBtn">Salvar</button>
             </div>
         </div>
     </div>
-    
+
     <script>
-        // Dados iniciais
-        let portfolioData = {
-            name: "Carlos Silva",
-            title: "Desenvolvedor Full Stack | UI/UX Designer",
-            about: "Olá! Eu sou Carlos Silva, um desenvolvedor full stack com 5 anos de experiência no mercado. Especializado em JavaScript, React, Node.js e design de interfaces, adoro criar soluções criativas e eficientes para problemas complexos. Minha abordagem combina habilidades técnicas com um olhar atento às necessidades dos usuários. Quando não estou codando, você pode me encontrar explorando novas tecnologias ou curtindo música.",
-            image: "https://via.placeholder.com/350",
-            social: {
-                linkedin: "#",
-                github: "#",
-                whatsapp: "#",
-                resume: "#"
-            },
-            projects: [
-                {
-                    title: "Sistema de Gerenciamento",
-                    description: "Plataforma completa para gerenciamento de tarefas e projetos com painel administrativo.",
-                    image: "https://via.placeholder.com/400x200",
-                    link: "#"
-                },
-                {
-                    title: "Aplicativo Mobile",
-                    description: "Aplicativo desenvolvido em React Native para controle financeiro pessoal.",
-                    image: "https://via.placeholder.com/400x200",
-                    link: "#"
-                },
-                {
-                    title: "Website Corporativo",
-                    description: "Site institucional responsivo com integração a sistemas de backend.",
-                    image: "https://via.placeholder.com/400x200",
-                    link: "#"
-                }
-            ]
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDi9eMlOCjHP98JbvKjaJ5Ek6lMdjnJS6U",
+            authDomain: "portfolio-emerson.firebaseapp.com",
+            projectId: "portfolio-emerson",
+            storageBucket: "portfolio-emerson.appspot.com",
+            messagingSenderId: "23143093943",
+            appId: "1:23143093943:web:c2b0458941e31de27d9f32"
         };
+
+        // Inicializa o Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Referências aos serviços do Firebase
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        const auth = firebase.auth();
+        
+        // Referência ao documento do portfólio
+        const portfolioRef = db.collection('portfolios').doc('emerson');
+        
+        // Variáveis de estado
+        let isAuthenticated = false;
+        let currentEditingProjectIndex = null;
+        let profileImageFile = null;
+        let projectImageFile = null;
         
         // Elementos do DOM
         const editPortfolioBtn = document.getElementById('editPortfolioBtn');
@@ -605,10 +676,13 @@
         const editProfileModal = document.getElementById('editProfileModal');
         const editName = document.getElementById('editName');
         const editTitle = document.getElementById('editTitle');
-        const editImage = document.getElementById('editImage');
         const editAbout = document.getElementById('editAbout');
+        const profileImageUpload = document.getElementById('profileImageUpload');
+        const profileImageUploadBtn = document.getElementById('profileImageUploadBtn');
+        const profileImagePreview = document.getElementById('profileImagePreview');
         const cancelProfileEditBtn = document.getElementById('cancelProfileEditBtn');
         const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const profileLoading = document.getElementById('profileLoading');
         
         const editSocialModal = document.getElementById('editSocialModal');
         const editLinkedin = document.getElementById('editLinkedin');
@@ -617,60 +691,101 @@
         const editResume = document.getElementById('editResume');
         const cancelSocialEditBtn = document.getElementById('cancelSocialEditBtn');
         const saveSocialBtn = document.getElementById('saveSocialBtn');
+        const socialLoading = document.getElementById('socialLoading');
         
         const editProjectModal = document.getElementById('editProjectModal');
         const projectModalTitle = document.getElementById('projectModalTitle');
         const projectTitle = document.getElementById('projectTitle');
         const projectDescription = document.getElementById('projectDescription');
-        const projectImage = document.getElementById('projectImage');
+        const projectImageUpload = document.getElementById('projectImageUpload');
+        const projectImageUploadBtn = document.getElementById('projectImageUploadBtn');
+        const projectImagePreview = document.getElementById('projectImagePreview');
         const projectLink = document.getElementById('projectLink');
         const projectIndex = document.getElementById('projectIndex');
         const cancelProjectBtn = document.getElementById('cancelProjectBtn');
         const saveProjectBtn = document.getElementById('saveProjectBtn');
+        const projectLoading = document.getElementById('projectLoading');
         
         const projectsContainer = document.getElementById('projectsContainer');
         
-        // Variável para controle de autenticação
-        let isAuthenticated = false;
-        let currentEditingProjectIndex = null;
-        
-        // Atualiza o ano no rodapé
-        document.getElementById('year').textContent = new Date().getFullYear();
-        
-        // Carrega os dados na página
+        // Carrega os dados do portfólio
         function loadPortfolioData() {
-            document.getElementById('userName').textContent = portfolioData.name;
-            document.getElementById('userTitle').textContent = portfolioData.title;
-            document.getElementById('aboutText').textContent = portfolioData.about;
-            document.getElementById('profileImage').src = portfolioData.image;
-            document.getElementById('footerName').textContent = portfolioData.name;
-            
-            // Atualiza links sociais
-            document.getElementById('linkedinBtn').href = portfolioData.social.linkedin;
-            document.getElementById('githubBtn').href = portfolioData.social.github;
-            document.getElementById('whatsappBtn').href = portfolioData.social.whatsapp;
-            document.getElementById('resumeBtn').href = portfolioData.social.resume;
-            
-            // Carrega projetos
-            renderProjects();
+            portfolioRef.get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    
+                    // Atualiza a UI com os dados
+                    document.getElementById('userName').textContent = data.name || 'Seu Nome';
+                    document.getElementById('userTitle').textContent = data.title || 'Sua Profissão';
+                    document.getElementById('aboutText').textContent = data.about || 'Fale sobre você aqui.';
+                    document.getElementById('footerName').textContent = data.name || 'Seu Nome';
+                    
+                    // Foto de perfil
+                    if (data.imageUrl) {
+                        document.getElementById('profileImage').src = data.imageUrl;
+                    } else {
+                        document.getElementById('profileImage').src = 'https://via.placeholder.com/350';
+                    }
+                    
+                    // Links sociais
+                    if (data.social) {
+                        document.getElementById('linkedinBtn').href = data.social.linkedin || '#';
+                        document.getElementById('githubBtn').href = data.social.github || '#';
+                        document.getElementById('whatsappBtn').href = data.social.whatsapp || '#';
+                        document.getElementById('resumeBtn').href = data.social.resume || '#';
+                    }
+                    
+                    // Projetos
+                    if (data.projects && data.projects.length > 0) {
+                        renderProjects(data.projects);
+                    } else {
+                        projectsContainer.innerHTML = '<p>Nenhum projeto cadastrado ainda.</p>';
+                    }
+                } else {
+                    // Cria um documento padrão se não existir
+                    portfolioRef.set({
+                        name: 'Seu Nome',
+                        title: 'Sua Profissão',
+                        about: 'Fale sobre você aqui.',
+                        social: {
+                            linkedin: '#',
+                            github: '#',
+                            whatsapp: '#',
+                            resume: '#'
+                        },
+                        projects: []
+                    }).then(() => {
+                        loadPortfolioData();
+                    });
+                }
+            }).catch(error => {
+                console.error("Erro ao carregar portfólio:", error);
+                alert("Erro ao carregar os dados. Por favor, recarregue a página.");
+            });
         }
         
         // Renderiza os projetos
-        function renderProjects() {
+        function renderProjects(projects = []) {
             projectsContainer.innerHTML = '';
             
-            portfolioData.projects.forEach((project, index) => {
+            if (projects.length === 0) {
+                projectsContainer.innerHTML = '<p>Nenhum projeto cadastrado ainda.</p>';
+                return;
+            }
+            
+            projects.forEach((project, index) => {
                 const projectCard = document.createElement('div');
                 projectCard.className = 'project-card';
                 projectCard.innerHTML = `
                     <div class="project-img">
-                        <img src="${project.image}" alt="${project.title}">
+                        <img src="${project.imageUrl || 'https://via.placeholder.com/400x200'}" alt="${project.title}">
                     </div>
                     <div class="project-info">
                         <h3>${project.title}</h3>
                         <p>${project.description}</p>
-                        <a href="${project.link}" class="btn btn-primary" target="_blank">Ver Projeto</a>
+                        <a href="${project.link || '#'}" class="btn btn-primary" target="_blank">Ver Projeto</a>
                     </div>
+                    ${isAuthenticated ? `
                     <div class="project-actions">
                         <button class="action-btn edit-project-btn" data-index="${index}">
                             <i class="fas fa-edit"></i>
@@ -679,6 +794,7 @@
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
+                    ` : ''}
                 `;
                 projectsContainer.appendChild(projectCard);
             });
@@ -703,7 +819,7 @@
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const index = parseInt(btn.getAttribute('data-index'));
-                    openProjectModal(index);
+                    openProjectModal(index, projects);
                 });
             });
             
@@ -712,8 +828,7 @@
                     e.stopPropagation();
                     const index = parseInt(btn.getAttribute('data-index'));
                     if (confirm('Tem certeza que deseja excluir este projeto?')) {
-                        portfolioData.projects.splice(index, 1);
-                        renderProjects();
+                        deleteProject(index);
                     }
                 });
             });
@@ -737,12 +852,15 @@
         
         // Confirma o login
         confirmLoginBtn.addEventListener('click', () => {
-            if (passwordInput.value === '123') {
+            const password = passwordInput.value;
+            
+            // Autenticação simples com senha fixa (em produção, use Firebase Authentication)
+            if (password === '123') {
                 isAuthenticated = true;
                 loginModal.style.display = 'none';
                 passwordInput.value = '';
                 editPortfolioBtn.innerHTML = '<i class="fas fa-cog"></i> Opções de Edição';
-                renderProjects();
+                loadPortfolioData(); // Recarrega para mostrar botões de edição
                 alert('Acesso concedido. Agora você pode editar o portfólio.');
             } else {
                 alert('Senha incorreta. Tente novamente.');
@@ -769,37 +887,120 @@ Digite o número da opção desejada:`);
         
         // Abre o modal de edição de perfil
         function openProfileModal() {
-            editName.value = portfolioData.name;
-            editTitle.value = portfolioData.title;
-            editImage.value = portfolioData.image;
-            editAbout.value = portfolioData.about;
-            editProfileModal.style.display = 'flex';
+            portfolioRef.get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    editName.value = data.name || '';
+                    editTitle.value = data.title || '';
+                    editAbout.value = data.about || '';
+                    
+                    if (data.imageUrl) {
+                        profileImagePreview.src = data.imageUrl;
+                        profileImagePreview.style.display = 'block';
+                    }
+                    
+                    editProfileModal.style.display = 'flex';
+                }
+            });
         }
+        
+        // Configura o upload da imagem de perfil
+        profileImageUploadBtn.addEventListener('click', () => {
+            profileImageUpload.click();
+        });
+        
+        profileImageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                profileImageFile = file;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    profileImagePreview.src = event.target.result;
+                    profileImagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
         
         // Fecha o modal de edição de perfil
         cancelProfileEditBtn.addEventListener('click', () => {
             editProfileModal.style.display = 'none';
+            profileImageFile = null;
+            profileImagePreview.src = '';
+            profileImagePreview.style.display = 'none';
         });
         
         // Salva as alterações do perfil
-        saveProfileBtn.addEventListener('click', () => {
-            portfolioData.name = editName.value;
-            portfolioData.title = editTitle.value;
-            portfolioData.image = editImage.value;
-            portfolioData.about = editAbout.value;
+        saveProfileBtn.addEventListener('click', async () => {
+            const name = editName.value;
+            const title = editTitle.value;
+            const about = editAbout.value;
             
-            loadPortfolioData();
-            editProfileModal.style.display = 'none';
-            alert('Perfil atualizado com sucesso!');
+            if (!name || !title || !about) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            saveProfileBtn.disabled = true;
+            profileLoading.style.display = 'block';
+            
+            try {
+                let imageUrl = '';
+                
+                // Se uma nova imagem foi selecionada, faz upload
+                if (profileImageFile) {
+                    const storageRef = storage.ref(`profile_images/${Date.now()}_${profileImageFile.name}`);
+                    const snapshot = await storageRef.put(profileImageFile);
+                    imageUrl = await snapshot.ref.getDownloadURL();
+                } else if (profileImagePreview.src && profileImagePreview.src.includes('http')) {
+                    // Mantém a imagem existente se não foi alterada
+                    imageUrl = profileImagePreview.src;
+                }
+                
+                // Atualiza os dados no Firestore
+                const updateData = {
+                    name,
+                    title,
+                    about
+                };
+                
+                if (imageUrl) {
+                    updateData.imageUrl = imageUrl;
+                }
+                
+                await portfolioRef.update(updateData);
+                
+                // Atualiza a UI
+                loadPortfolioData();
+                editProfileModal.style.display = 'none';
+                profileImageFile = null;
+                profileImagePreview.src = '';
+                profileImagePreview.style.display = 'none';
+                
+                alert('Perfil atualizado com sucesso!');
+            } catch (error) {
+                console.error("Erro ao salvar perfil:", error);
+                alert("Erro ao salvar as alterações. Por favor, tente novamente.");
+            } finally {
+                saveProfileBtn.disabled = false;
+                profileLoading.style.display = 'none';
+            }
         });
         
         // Abre o modal de edição de links sociais
         function openSocialModal() {
-            editLinkedin.value = portfolioData.social.linkedin;
-            editGithub.value = portfolioData.social.github;
-            editWhatsapp.value = portfolioData.social.whatsapp;
-            editResume.value = portfolioData.social.resume;
-            editSocialModal.style.display = 'flex';
+            portfolioRef.get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    
+                    editLinkedin.value = data.social?.linkedin || '';
+                    editGithub.value = data.social?.github || '';
+                    editWhatsapp.value = data.social?.whatsapp || '';
+                    editResume.value = data.social?.resume || '';
+                    
+                    editSocialModal.style.display = 'flex';
+                }
+            });
         }
         
         // Fecha o modal de edição de links sociais
@@ -808,71 +1009,39 @@ Digite o número da opção desejada:`);
         });
         
         // Salva as alterações dos links sociais
-        saveSocialBtn.addEventListener('click', () => {
-            portfolioData.social.linkedin = editLinkedin.value;
-            portfolioData.social.github = editGithub.value;
-            portfolioData.social.whatsapp = editWhatsapp.value;
-            portfolioData.social.resume = editResume.value;
+        saveSocialBtn.addEventListener('click', async () => {
+            const socialData = {
+                linkedin: editLinkedin.value,
+                github: editGithub.value,
+                whatsapp: editWhatsapp.value,
+                resume: editResume.value
+            };
             
-            loadPortfolioData();
-            editSocialModal.style.display = 'none';
-            alert('Links sociais atualizados com sucesso!');
+            saveSocialBtn.disabled = true;
+            socialLoading.style.display = 'block';
+            
+            try {
+                await portfolioRef.update({
+                    social: socialData
+                });
+                
+                // Atualiza a UI
+                loadPortfolioData();
+                editSocialModal.style.display = 'none';
+                
+                alert('Links sociais atualizados com sucesso!');
+            } catch (error) {
+                console.error("Erro ao salvar links sociais:", error);
+                alert("Erro ao salvar as alterações. Por favor, tente novamente.");
+            } finally {
+                saveSocialBtn.disabled = false;
+                socialLoading.style.display = 'none';
+            }
         });
         
         // Abre o modal de edição de projeto
-        function openProjectModal(index = null) {
-            if (index !== null) {
+        function openProjectModal(index = null, projects = null) {
+            if (index !== null && projects) {
                 // Editar projeto existente
-                const project = portfolioData.projects[index];
-                projectTitle.value = project.title;
-                projectDescription.value = project.description;
-                projectImage.value = project.image;
-                projectLink.value = project.link;
-                projectIndex.value = index;
-                projectModalTitle.textContent = 'Editar Projeto';
-                currentEditingProjectIndex = index;
-            } else {
-                // Novo projeto
-                projectTitle.value = '';
-                projectDescription.value = '';
-                projectImage.value = '';
-                projectLink.value = '';
-                projectIndex.value = '';
-                projectModalTitle.textContent = 'Adicionar Novo Projeto';
-                currentEditingProjectIndex = null;
-            }
-            editProjectModal.style.display = 'flex';
-        }
-        
-        // Fecha o modal de edição de projeto
-        cancelProjectBtn.addEventListener('click', () => {
-            editProjectModal.style.display = 'none';
-        });
-        
-        // Salva as alterações do projeto
-        saveProjectBtn.addEventListener('click', () => {
-            const project = {
-                title: projectTitle.value,
-                description: projectDescription.value,
-                image: projectImage.value,
-                link: projectLink.value
-            };
-            
-            if (currentEditingProjectIndex !== null) {
-                // Atualiza projeto existente
-                portfolioData.projects[currentEditingProjectIndex] = project;
-            } else {
-                // Adiciona novo projeto
-                portfolioData.projects.push(project);
-            }
-            
-            renderProjects();
-            editProjectModal.style.display = 'none';
-            alert('Projeto salvo com sucesso!');
-        });
-        
-        // Carrega os dados iniciais
-        loadPortfolioData();
-    </script>
-</body>
-</html>
+                const project = projects[index];
+                project
