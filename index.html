@@ -3,367 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emerson Flores de Souza - Portfólio</title>
+    <title>Emerson Flores - Portfólio Profissional</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #34495e;
-            --accent-color: #3498db;
-            --text-color: #ecf0f1;
-            --text-secondary: #bdc3c7;
-            --dark-gray: #1a1a1a;
-            --medium-gray: #333;
-            --light-gray: #7f8c8d;
+            --primary: #1e293b;
+            --secondary: #334155;
+            --accent: #3b82f6;
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
+            --card-bg: #1e293b;
+            --success: #10b981;
+            --danger: #ef4444;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         body {
-            background-color: var(--primary-color);
-            color: var(--text-color);
+            background-color: var(--primary);
+            color: var(--text);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            line-height: 1.6;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-            flex: 1;
+            padding: 2rem;
         }
 
-        header {
+        /* Header Styles */
+        .profile-header {
             display: flex;
             flex-wrap: wrap;
-            gap: 40px;
+            gap: 3rem;
             align-items: center;
-            margin-bottom: 40px;
-            padding-top: 20px;
+            margin-bottom: 3rem;
         }
 
-        .profile {
+        .profile-section {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 1.5rem;
+            min-width: 250px;
+        }
+
+        .profile-pic-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
         }
 
         .profile-pic {
-            width: 200px;
-            height: 200px;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            border: 5px solid var(--accent-color);
-            cursor: pointer;
-            transition: transform 0.3s;
+            border: 4px solid var(--accent);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
         }
 
         .profile-pic:hover {
-            transform: scale(1.05);
+            transform: scale(1.03);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .edit-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        .edit-mode .edit-overlay {
+            opacity: 1;
         }
 
         .profile-name {
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 2rem;
+            font-weight: 700;
             text-align: center;
+            color: var(--text);
         }
 
-        .about {
+        .about-section {
             flex: 1;
             min-width: 300px;
-            background-color: var(--secondary-color);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            background: var(--secondary);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
         }
 
-        .about h2 {
-            margin-bottom: 15px;
-            color: var(--accent-color);
-        }
-
-        .about-content {
-            line-height: 1.6;
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            font-weight: 600;
         }
 
         .social-links {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 1rem;
+            margin-top: 2rem;
         }
 
         .social-btn {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 15px;
-            background-color: var(--medium-gray);
-            color: var(--text-color);
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            border-radius: 0.5rem;
             text-decoration: none;
-            border-radius: 5px;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
+            border: 1px solid rgba(59, 130, 246, 0.2);
         }
 
         .social-btn:hover {
-            background-color: var(--accent-color);
+            background: var(--accent);
+            color: white;
             transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
         }
 
+        /* Projects Section */
         .projects-section {
-            margin-top: 40px;
+            margin-top: 3rem;
         }
 
-        .projects-section h2 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: var(--accent-color);
-        }
-
-        .projects-container {
+        .projects-header {
             display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding-bottom: 20px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--accent-color) var(--secondary-color);
-            min-height: 100px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
         }
 
-        .projects-container::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .projects-container::-webkit-scrollbar-track {
-            background: var(--secondary-color);
-            border-radius: 10px;
-        }
-
-        .projects-container::-webkit-scrollbar-thumb {
-            background-color: var(--accent-color);
-            border-radius: 10px;
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
         }
 
         .project-card {
-            min-width: 300px;
-            background-color: var(--secondary-color);
-            border-radius: 10px;
+            background: var(--card-bg);
+            border-radius: 1rem;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
             position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .project-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .project-image-container {
+            height: 180px;
+            position: relative;
+            overflow: hidden;
         }
 
         .project-image {
             width: 100%;
-            height: 180px;
+            height: 100%;
             object-fit: cover;
-            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+
+        .project-card:hover .project-image {
+            transform: scale(1.05);
         }
 
         .project-info {
-            padding: 15px;
+            padding: 1.5rem;
         }
 
         .project-title {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: var(--accent-color);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text);
         }
 
         .project-description {
-            font-size: 14px;
             color: var(--text-secondary);
-            margin-bottom: 15px;
-            line-height: 1.5;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
         }
 
         .project-link {
-            display: inline-block;
-            padding: 8px 15px;
-            background-color: var(--accent-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--accent);
             color: white;
+            border-radius: 0.5rem;
             text-decoration: none;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: background-color 0.3s;
+            font-size: 0.9rem;
+            transition: all 0.3s;
         }
 
         .project-link:hover {
-            background-color: #2980b9;
+            background: #2563eb;
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
         }
 
         .add-project-btn {
             display: none;
-            padding: 10px 20px;
-            background-color: var(--accent-color);
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--success);
             color: white;
             border: none;
-            border-radius: 5px;
-            margin-top: 20px;
+            border-radius: 0.5rem;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            font-weight: 500;
+            transition: all 0.3s;
         }
 
         .add-project-btn:hover {
-            background-color: #2980b9;
+            background: #059669;
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
         }
 
         .edit-mode .add-project-btn {
-            display: inline-block;
-        }
-
-        .edit-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--accent-color);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            z-index: 100;
-        }
-
-        .password-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: var(--secondary-color);
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .modal-content h3 {
-            margin-bottom: 20px;
-            color: var(--accent-color);
-        }
-
-        .password-input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            border: none;
-            background-color: var(--medium-gray);
-            color: var(--text-color);
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .modal-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .confirm-btn {
-            background-color: var(--accent-color);
-            color: white;
-        }
-
-        .cancel-btn {
-            background-color: var(--medium-gray);
-            color: var(--text-color);
-        }
-
-        .edit-mode .editable {
-            border: 1px dashed rgba(255, 255, 255, 0.5);
-            padding: 5px;
-            margin: -5px;
-            border-radius: 3px;
+            display: inline-flex;
         }
 
         .delete-project {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #e74c3c;
+            top: 1rem;
+            right: 1rem;
+            background: var(--danger);
             color: white;
-            border: none;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
+            border: none;
             cursor: pointer;
-            display: none;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+
+        .delete-project:hover {
+            background: #dc2626;
+            transform: scale(1.1);
         }
 
         .edit-mode .delete-project {
             display: flex;
         }
 
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: var(--secondary-color);
-            margin-top: 40px;
+        /* Edit Mode Styles */
+        .edit-mode .editable {
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 0.25rem;
+            padding: 0.25rem;
+            margin: -0.25rem;
+            min-height: 1.5em;
         }
 
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
+        /* Edit Button */
+        .edit-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+            z-index: 100;
+            transition: all 0.3s;
+        }
 
-            .about {
+        .edit-btn:hover {
+            transform: scale(1.1);
+            background: #2563eb;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--secondary);
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .modal-btn.confirm {
+            background: var(--accent);
+            color: white;
+        }
+
+        .modal-btn.confirm:hover {
+            background: #2563eb;
+        }
+
+        .modal-btn.cancel {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+
+        .modal-btn.cancel:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Loading State */
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            background: var(--secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
                 text-align: center;
             }
 
             .social-links {
                 justify-content: center;
             }
+
+            .projects-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="profile">
-                <img id="profileImage" src="https://via.placeholder.com/200" alt="Foto de Emerson Flores de Souza" class="profile-pic">
+        <header class="profile-header">
+            <div class="profile-section">
+                <div class="profile-pic-container">
+                    <img id="profileImage" src="https://via.placeholder.com/300" alt="Foto de Emerson Flores" class="profile-pic">
+                    <div class="edit-overlay">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
                 <h1 id="profileName" class="profile-name editable">EMERSON FLORES DE SOUZA</h1>
             </div>
-            <div class="about">
-                <h2>Sobre</h2>
+            <div class="about-section">
+                <h2 class="section-title">Sobre</h2>
                 <div id="aboutContent" class="about-content editable">
                     Sou um profissional dedicado e apaixonado por tecnologia. Com experiência em diversas áreas, busco constantemente aprender e me desenvolver. Este portfólio apresenta alguns dos meus projetos mais relevantes.
                 </div>
@@ -378,20 +474,22 @@
                         <i class="fab fa-whatsapp"></i> WhatsApp
                     </a>
                     <a id="resumeBtn" href="#" class="social-btn editable" data-editable-type="link" target="_blank">
-                        <i class="fas fa-download"></i> Baixar CV
+                        <i class="fas fa-download"></i> Currículo
                     </a>
                 </div>
             </div>
         </header>
 
         <section class="projects-section">
-            <h2>Projetos</h2>
-            <div id="projectsContainer" class="projects-container">
+            <div class="projects-header">
+                <h2 class="section-title">Projetos</h2>
+                <button id="addProjectBtn" class="add-project-btn">
+                    <i class="fas fa-plus"></i> Adicionar Projeto
+                </button>
+            </div>
+            <div id="projectsGrid" class="projects-grid">
                 <!-- Projetos serão adicionados dinamicamente -->
             </div>
-            <button id="addProjectBtn" class="add-project-btn">
-                <i class="fas fa-plus"></i> Adicionar Projeto
-            </button>
         </section>
     </div>
 
@@ -403,13 +501,13 @@
         <i class="fas fa-edit"></i>
     </div>
 
-    <div class="password-modal" id="passwordModal">
+    <div class="modal" id="passwordModal">
         <div class="modal-content">
-            <h3>Digite a senha para editar</h3>
-            <input type="password" class="password-input" id="passwordInput" placeholder="Senha">
-            <div class="modal-buttons">
-                <button class="modal-btn confirm-btn" id="confirmPassword">Confirmar</button>
-                <button class="modal-btn cancel-btn" id="cancelPassword">Cancelar</button>
+            <h3 class="modal-title">Acesso de Edição</h3>
+            <input type="password" class="modal-input" id="passwordInput" placeholder="Digite sua senha">
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="cancelPassword">Cancelar</button>
+                <button class="modal-btn confirm" id="confirmPassword">Acessar</button>
             </div>
         </div>
     </div>
@@ -448,17 +546,17 @@
         const githubBtn = document.getElementById('githubBtn');
         const whatsappBtn = document.getElementById('whatsappBtn');
         const resumeBtn = document.getElementById('resumeBtn');
-        const projectsContainer = document.getElementById('projectsContainer');
+        const projectsGrid = document.getElementById('projectsGrid');
         const addProjectBtn = document.getElementById('addProjectBtn');
 
         // Senha para edição
         const EDIT_PASSWORD = "123";
-
-        // Verifica se estamos em modo de edição
         let editMode = false;
 
         // Carrega os dados do Firebase
         function loadData() {
+            showLoading();
+            
             database.ref('portfolio').once('value').then((snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -466,7 +564,12 @@
                     if (data.profile) {
                         if (data.profile.name) profileName.textContent = data.profile.name;
                         if (data.profile.about) aboutContent.textContent = data.profile.about;
-                        if (data.profile.imageUrl) profileImage.src = data.profile.imageUrl;
+                        if (data.profile.imageUrl) {
+                            profileImage.src = data.profile.imageUrl;
+                            profileImage.onerror = () => {
+                                profileImage.src = "https://via.placeholder.com/300";
+                            };
+                        }
                     }
 
                     // Carrega links sociais
@@ -479,15 +582,27 @@
 
                     // Carrega projetos
                     if (data.projects && data.projects.length > 0) {
-                        projectsContainer.innerHTML = '';
+                        projectsGrid.innerHTML = '';
                         data.projects.forEach((project, index) => {
                             addProjectToUI(project, index);
                         });
                     }
                 }
+                hideLoading();
             }).catch(error => {
                 console.error("Erro ao carregar dados:", error);
+                hideLoading();
             });
+        }
+
+        // Mostra estado de carregamento
+        function showLoading() {
+            document.body.classList.add('loading');
+        }
+
+        // Esconde estado de carregamento
+        function hideLoading() {
+            document.body.classList.remove('loading');
         }
 
         // Adiciona um projeto à interface
@@ -497,23 +612,27 @@
             projectCard.dataset.index = index;
             
             projectCard.innerHTML = `
-                <img src="${projectData.imageUrl || 'https://via.placeholder.com/300x180'}" 
-                     alt="${projectData.title || 'Projeto'}" 
-                     class="project-image editable" 
-                     data-editable-type="image">
-                <button class="delete-project" data-index="${index}">
-                    <i class="fas fa-times"></i>
-                </button>
+                <div class="project-image-container">
+                    <img src="${projectData.imageUrl || 'https://via.placeholder.com/600x400'}" 
+                         alt="${projectData.title || 'Projeto'}" 
+                         class="project-image editable" 
+                         data-editable-type="image">
+                    <button class="delete-project" data-index="${index}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
                 <div class="project-info">
-                    <h3 class="project-title editable">${projectData.title || 'Nome do Projeto'}</h3>
+                    <h3 class="project-title editable">${projectData.title || 'Novo Projeto'}</h3>
                     <p class="project-description editable">${projectData.description || 'Descrição do projeto'}</p>
                     <a href="${projectData.link || '#'}" 
                        class="project-link editable" 
-                       data-editable-type="link">Ver Projeto</a>
+                       data-editable-type="link">
+                       <i class="fas fa-external-link-alt"></i> Ver Projeto
+                    </a>
                 </div>
             `;
             
-            projectsContainer.appendChild(projectCard);
+            projectsGrid.appendChild(projectCard);
             setupProjectCardEvents(projectCard);
         }
 
@@ -547,10 +666,11 @@
                 
                 try {
                     // Mostra feedback visual de carregamento
-                    profileImage.style.opacity = '0.5';
+                    profileImage.classList.add('loading');
                     
                     // Faz upload para o Firebase Storage
-                    const storageRef = storage.ref('profile/' + file.name);
+                    const fileName = `profile/profile_${Date.now()}_${file.name}`;
+                    const storageRef = storage.ref(fileName);
                     const uploadTask = storageRef.put(file);
                     
                     // Aguarda o upload completar
@@ -567,14 +687,17 @@
                     
                     // Atualiza a imagem na interface
                     profileImage.src = downloadURL;
-                    profileImage.style.opacity = '1';
+                    profileImage.onerror = () => {
+                        profileImage.src = "https://via.placeholder.com/300";
+                    };
                     
                     // Salva no banco de dados
-                    saveData();
+                    await saveData();
                 } catch (error) {
                     console.error("Erro no upload:", error);
                     alert("Erro ao fazer upload da imagem");
-                    profileImage.style.opacity = '1';
+                } finally {
+                    profileImage.classList.remove('loading');
                 }
             };
             
@@ -592,14 +715,13 @@
                 if (!file) return;
                 
                 const projectCard = imgElement.closest('.project-card');
-                const projectIndex = projectCard.dataset.index;
                 
                 try {
                     // Mostra feedback visual de carregamento
-                    imgElement.style.opacity = '0.5';
+                    imgElement.classList.add('loading');
                     
                     // Faz upload para o Firebase Storage
-                    const fileName = `projects/project_${projectIndex}_${Date.now()}_${file.name}`;
+                    const fileName = `projects/project_${Date.now()}_${file.name}`;
                     const storageRef = storage.ref(fileName);
                     const uploadTask = storageRef.put(file);
                     
@@ -617,14 +739,17 @@
                     
                     // Atualiza a imagem na interface
                     imgElement.src = downloadURL;
-                    imgElement.style.opacity = '1';
+                    imgElement.onerror = () => {
+                        imgElement.src = "https://via.placeholder.com/600x400";
+                    };
                     
                     // Salva no banco de dados
-                    saveData();
+                    await saveData();
                 } catch (error) {
                     console.error("Erro no upload:", error);
                     alert("Erro ao fazer upload da imagem");
-                    imgElement.style.opacity = '1';
+                } finally {
+                    imgElement.classList.remove('loading');
                 }
             };
             
@@ -632,39 +757,42 @@
         }
 
         // Salva os dados no Firebase
-        function saveData() {
-            const profileData = {
-                name: profileName.textContent,
-                about: aboutContent.textContent,
-                imageUrl: profileImage.src
-            };
+        async function saveData() {
+            try {
+                const profileData = {
+                    name: profileName.textContent,
+                    about: aboutContent.textContent,
+                    imageUrl: profileImage.src
+                };
 
-            const socialLinksData = {
-                linkedin: linkedinBtn.href,
-                github: githubBtn.href,
-                whatsapp: whatsappBtn.href,
-                resume: resumeBtn.href
-            };
+                const socialLinksData = {
+                    linkedin: linkedinBtn.href,
+                    github: githubBtn.href,
+                    whatsapp: whatsappBtn.href,
+                    resume: resumeBtn.href
+                };
 
-            const projectsData = [];
-            document.querySelectorAll('.project-card').forEach(card => {
-                projectsData.push({
-                    title: card.querySelector('.project-title').textContent,
-                    description: card.querySelector('.project-description').textContent,
-                    imageUrl: card.querySelector('.project-image').src,
-                    link: card.querySelector('.project-link').href
+                const projectsData = [];
+                document.querySelectorAll('.project-card').forEach(card => {
+                    projectsData.push({
+                        title: card.querySelector('.project-title').textContent,
+                        description: card.querySelector('.project-description').textContent,
+                        imageUrl: card.querySelector('.project-image').src,
+                        link: card.querySelector('.project-link').href
+                    });
                 });
-            });
 
-            database.ref('portfolio').set({
-                profile: profileData,
-                socialLinks: socialLinksData,
-                projects: projectsData
-            }).then(() => {
+                await database.ref('portfolio').set({
+                    profile: profileData,
+                    socialLinks: socialLinksData,
+                    projects: projectsData
+                });
+                
                 console.log("Dados salvos com sucesso!");
-            }).catch(error => {
+            } catch (error) {
                 console.error("Erro ao salvar dados:", error);
-            });
+                alert("Erro ao salvar as alterações. Por favor, tente novamente.");
+            }
         }
 
         // Ativa/desativa o modo de edição
@@ -709,29 +837,23 @@
                 });
                 
                 // Botão de adicionar projeto
-                addProjectBtn.style.display = 'inline-block';
                 addProjectBtn.addEventListener('click', addNewProject);
                 
                 // Configura eventos para salvar quando o conteúdo é alterado
                 document.querySelectorAll('.editable').forEach(element => {
-                    if (element.dataset.editableType !== 'link') {
+                    if (element.dataset.editableType !== 'link' && element.dataset.editableType !== 'image') {
                         element.addEventListener('blur', saveData);
                     }
                 });
             } else {
                 // Remove eventos do modo de edição
                 profileImage.removeEventListener('click', uploadProfileImage);
-                addProjectBtn.style.display = 'none';
                 addProjectBtn.removeEventListener('click', addNewProject);
                 
                 document.querySelectorAll('.editable').forEach(element => {
-                    if (element.dataset.editableType !== 'link') {
+                    if (element.dataset.editableType !== 'link' && element.dataset.editableType !== 'image') {
                         element.removeEventListener('blur', saveData);
                     }
-                });
-                
-                document.querySelectorAll('.delete-project').forEach(btn => {
-                    btn.style.display = 'none';
                 });
             }
         }
@@ -741,7 +863,7 @@
             const newProjectData = {
                 title: "Novo Projeto",
                 description: "Descrição do novo projeto",
-                imageUrl: "https://via.placeholder.com/300x180",
+                imageUrl: "https://via.placeholder.com/600x400",
                 link: "#"
             };
             
@@ -776,7 +898,7 @@
             passwordInput.value = '';
         });
 
-        // Fecha o modal ao pressionar Esc
+        // Fecha o modal ao pressionar Esc ou Enter
         passwordInput.addEventListener('keyup', (e) => {
             if (e.key === 'Escape') {
                 passwordModal.style.display = 'none';
@@ -797,7 +919,7 @@
         document.getElementById('currentYear').textContent = new Date().getFullYear();
 
         // Carrega os dados quando a página é carregada
-        window.addEventListener('DOMContentLoaded', loadData);
+        document.addEventListener('DOMContentLoaded', loadData);
     </script>
 </body>
 </html>
