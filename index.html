@@ -263,15 +263,19 @@
 
         .edit-panel {
             position: fixed;
-            bottom: 80px;
-            right: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background-color: var(--secondary-color);
-            padding: 1rem;
+            padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             display: none;
             z-index: 99;
-            width: 300px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .edit-panel.show {
@@ -279,19 +283,20 @@
         }
 
         .edit-field {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .edit-field label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
+            color: var(--highlight-color);
         }
 
         .edit-field input, 
         .edit-field textarea {
             width: 100%;
-            padding: 0.5rem;
+            padding: 0.8rem;
             border-radius: 5px;
             border: 1px solid var(--accent-color);
             background-color: var(--primary-color);
@@ -299,21 +304,24 @@
         }
 
         .edit-field textarea {
-            min-height: 100px;
+            min-height: 120px;
             resize: vertical;
         }
 
         .edit-actions {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1rem;
         }
 
         .save-btn, .cancel-btn {
-            padding: 0.5rem 1rem;
+            padding: 0.7rem 1.5rem;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-weight: 500;
+            transition: all 0.3s;
         }
 
         .save-btn {
@@ -321,17 +329,66 @@
             color: white;
         }
 
+        .save-btn:hover {
+            background-color: #2ecc71;
+        }
+
         .cancel-btn {
             background-color: #e74c3c;
             color: white;
         }
 
-        .editable {
-            transition: background-color 0.3s;
+        .cancel-btn:hover {
+            background-color: #c0392b;
         }
 
-        .editable:hover {
-            background-color: var(--edit-mode-color);
+        .edit-panel-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--highlight-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .image-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 1rem auto;
+            display: block;
+            border: 3px solid var(--accent-color);
+        }
+
+        .project-image-preview {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            margin: 1rem auto;
+            display: block;
+            border: 3px solid var(--accent-color);
+            border-radius: 5px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 0.8rem;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px dashed var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .file-input-label:hover {
+            background-color: var(--accent-color);
+        }
+
+        .file-input {
+            display: none;
         }
 
         /* Password Modal */
@@ -376,12 +433,13 @@
         }
 
         .modal-btn {
-            padding: 0.5rem 1rem;
+            padding: 0.7rem 1.5rem;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-weight: 500;
             margin: 0 0.5rem;
+            transition: all 0.3s;
         }
 
         .modal-btn.confirm {
@@ -389,9 +447,17 @@
             color: white;
         }
 
+        .modal-btn.confirm:hover {
+            background-color: #2ecc71;
+        }
+
         .modal-btn.cancel {
             background-color: #e74c3c;
             color: white;
+        }
+
+        .modal-btn.cancel:hover {
+            background-color: #c0392b;
         }
 
         /* Responsive */
@@ -416,6 +482,11 @@
             
             .project-card {
                 max-width: 100%;
+            }
+            
+            .edit-panel {
+                width: 95%;
+                padding: 1.5rem;
             }
         }
     </style>
@@ -473,15 +544,6 @@
                         <a href="#" class="project-link">Ver Projeto</a>
                     </div>
                 </div>
-                
-                <div class="project-card">
-                    <img src="https://via.placeholder.com/300x180" alt="Projeto 3" class="project-image">
-                    <div class="project-info">
-                        <h3 class="project-title">Projeto Exemplo 3</h3>
-                        <p class="project-description">Terceiro projeto de exemplo mostrando como ficaria com vários projetos na horizontal.</p>
-                        <a href="#" class="project-link">Ver Projeto</a>
-                    </div>
-                </div>
             </div>
         </div>
         
@@ -492,40 +554,101 @@
             </button>
         </div>
         
-        <div class="edit-panel" id="edit-panel">
+        <!-- Edit Panels -->
+        <div class="edit-panel" id="password-panel">
+            <h3 class="edit-panel-title">Digite a senha para editar</h3>
             <div class="edit-field">
-                <label for="edit-select">Editar:</label>
-                <select id="edit-select" class="edit-input">
-                    <option value="">Selecione o item...</option>
-                    <option value="profile-pic">Foto de Perfil</option>
-                    <option value="about-content">Texto Sobre</option>
-                    <option value="linkedin-btn">Link LinkedIn</option>
-                    <option value="github-btn">Link GitHub</option>
-                    <option value="whatsapp-btn">Link WhatsApp</option>
-                    <option value="resume-btn">Currículo PDF</option>
-                    <option value="add-project">Adicionar Projeto</option>
-                </select>
+                <input type="password" id="password-input" class="edit-input" placeholder="Senha">
             </div>
-            
-            <div id="edit-fields-container">
-                <!-- Dynamic fields will appear here based on selection -->
-            </div>
-            
             <div class="edit-actions">
-                <button class="cancel-btn" id="cancel-edit">Cancelar</button>
-                <button class="save-btn" id="save-edit">Salvar</button>
+                <button class="cancel-btn" id="cancel-password">Cancelar</button>
+                <button class="save-btn" id="confirm-password">Confirmar</button>
             </div>
         </div>
         
-        <!-- Password Modal -->
-        <div class="modal" id="password-modal">
-            <div class="modal-content">
-                <h3 class="modal-title">Digite a senha para editar</h3>
-                <input type="password" class="modal-input" id="password-input" placeholder="Senha">
-                <div>
-                    <button class="modal-btn confirm" id="confirm-password">Confirmar</button>
-                    <button class="modal-btn cancel" id="cancel-password">Cancelar</button>
-                </div>
+        <div class="edit-panel" id="profile-pic-panel">
+            <h3 class="edit-panel-title">Editar Foto de Perfil</h3>
+            <img id="profile-pic-preview" src="https://via.placeholder.com/150" alt="Preview" class="image-preview">
+            <label for="profile-pic-file" class="file-input-label">
+                <i class="fas fa-cloud-upload-alt"></i> Selecionar Imagem
+            </label>
+            <input type="file" id="profile-pic-file" class="file-input" accept="image/*">
+            <div class="edit-actions">
+                <button class="cancel-btn" id="cancel-profile-pic">Cancelar</button>
+                <button class="save-btn" id="save-profile-pic">Salvar</button>
+            </div>
+        </div>
+        
+        <div class="edit-panel" id="about-panel">
+            <h3 class="edit-panel-title">Editar Sobre</h3>
+            <div class="edit-field">
+                <label for="about-text">Texto Sobre:</label>
+                <textarea id="about-text" class="edit-input">Profissional dedicado e apaixonado por tecnologia. Com experiência em desenvolvimento web e soluções inovadoras, sempre buscando aprender e compartilhar conhecimento.</textarea>
+            </div>
+            <div class="edit-actions">
+                <button class="cancel-btn" id="cancel-about">Cancelar</button>
+                <button class="save-btn" id="save-about">Salvar</button>
+            </div>
+        </div>
+        
+        <div class="edit-panel" id="links-panel">
+            <h3 class="edit-panel-title">Editar Links</h3>
+            <div class="edit-field">
+                <label for="linkedin-link">LinkedIn:</label>
+                <input type="text" id="linkedin-link" class="edit-input" placeholder="Cole o link do LinkedIn">
+            </div>
+            <div class="edit-field">
+                <label for="github-link">GitHub:</label>
+                <input type="text" id="github-link" class="edit-input" placeholder="Cole o link do GitHub">
+            </div>
+            <div class="edit-field">
+                <label for="whatsapp-link">WhatsApp:</label>
+                <input type="text" id="whatsapp-link" class="edit-input" placeholder="Cole o link do WhatsApp">
+            </div>
+            <div class="edit-actions">
+                <button class="cancel-btn" id="cancel-links">Cancelar</button>
+                <button class="save-btn" id="save-links">Salvar</button>
+            </div>
+        </div>
+        
+        <div class="edit-panel" id="resume-panel">
+            <h3 class="edit-panel-title">Editar Currículo</h3>
+            <div class="edit-field">
+                <label for="resume-file" class="file-input-label">
+                    <i class="fas fa-cloud-upload-alt"></i> Selecionar Arquivo PDF
+                </label>
+                <input type="file" id="resume-file" class="file-input" accept=".pdf">
+            </div>
+            <div class="edit-actions">
+                <button class="cancel-btn" id="cancel-resume">Cancelar</button>
+                <button class="save-btn" id="save-resume">Salvar</button>
+            </div>
+        </div>
+        
+        <div class="edit-panel" id="project-panel">
+            <h3 class="edit-panel-title">Adicionar Novo Projeto</h3>
+            <div class="edit-field">
+                <label for="project-title">Título do Projeto:</label>
+                <input type="text" id="project-title" class="edit-input" placeholder="Título do projeto">
+            </div>
+            <div class="edit-field">
+                <label for="project-description">Descrição:</label>
+                <textarea id="project-description" class="edit-input" placeholder="Descrição do projeto"></textarea>
+            </div>
+            <div class="edit-field">
+                <label for="project-image-file" class="file-input-label">
+                    <i class="fas fa-cloud-upload-alt"></i> Selecionar Imagem do Projeto
+                </label>
+                <input type="file" id="project-image-file" class="file-input" accept="image/*">
+                <img id="project-image-preview" src="" alt="Preview" class="project-image-preview" style="display: none;">
+            </div>
+            <div class="edit-field">
+                <label for="project-link">Link do Projeto:</label>
+                <input type="text" id="project-link" class="edit-input" placeholder="Cole o URL do projeto">
+            </div>
+            <div class="edit-actions">
+                <button class="cancel-btn" id="cancel-project">Cancelar</button>
+                <button class="save-btn" id="save-project">Salvar</button>
             </div>
         </div>
     </div>
@@ -533,28 +656,59 @@
     <script>
         // Elements
         const editBtn = document.getElementById('edit-btn');
-        const editPanel = document.getElementById('edit-panel');
-        const passwordModal = document.getElementById('password-modal');
+        const passwordPanel = document.getElementById('password-panel');
         const passwordInput = document.getElementById('password-input');
         const confirmPassword = document.getElementById('confirm-password');
         const cancelPassword = document.getElementById('cancel-password');
-        const cancelEdit = document.getElementById('cancel-edit');
-        const saveEdit = document.getElementById('save-edit');
-        const editSelect = document.getElementById('edit-select');
-        const editFieldsContainer = document.getElementById('edit-fields-container');
+        
+        // Profile pic elements
+        const profilePicPanel = document.getElementById('profile-pic-panel');
+        const profilePicFile = document.getElementById('profile-pic-file');
+        const profilePicPreview = document.getElementById('profile-pic-preview');
+        const saveProfilePic = document.getElementById('save-profile-pic');
+        const cancelProfilePic = document.getElementById('cancel-profile-pic');
+        
+        // About elements
+        const aboutPanel = document.getElementById('about-panel');
+        const aboutText = document.getElementById('about-text');
+        const saveAbout = document.getElementById('save-about');
+        const cancelAbout = document.getElementById('cancel-about');
+        
+        // Links elements
+        const linksPanel = document.getElementById('links-panel');
+        const linkedinLink = document.getElementById('linkedin-link');
+        const githubLink = document.getElementById('github-link');
+        const whatsappLink = document.getElementById('whatsapp-link');
+        const saveLinks = document.getElementById('save-links');
+        const cancelLinks = document.getElementById('cancel-links');
+        
+        // Resume elements
+        const resumePanel = document.getElementById('resume-panel');
+        const resumeFile = document.getElementById('resume-file');
+        const saveResume = document.getElementById('save-resume');
+        const cancelResume = document.getElementById('cancel-resume');
+        
+        // Project elements
+        const projectPanel = document.getElementById('project-panel');
+        const projectTitle = document.getElementById('project-title');
+        const projectDescription = document.getElementById('project-description');
+        const projectImageFile = document.getElementById('project-image-file');
+        const projectImagePreview = document.getElementById('project-image-preview');
+        const projectLink = document.getElementById('project-link');
+        const saveProject = document.getElementById('save-project');
+        const cancelProject = document.getElementById('cancel-project');
         
         // Correct password
         const CORRECT_PASSWORD = '123';
         let isAuthenticated = false;
-        let currentEditItem = null;
         
         // Toggle edit panel
         editBtn.addEventListener('click', () => {
             if (!isAuthenticated) {
-                passwordModal.classList.add('show');
-                passwordInput.value = '';
+                showPanel(passwordPanel);
             } else {
-                editPanel.classList.toggle('show');
+                // If already authenticated, show the links panel by default
+                showPanel(linksPanel);
             }
         });
         
@@ -562,8 +716,8 @@
         confirmPassword.addEventListener('click', () => {
             if (passwordInput.value === CORRECT_PASSWORD) {
                 isAuthenticated = true;
-                passwordModal.classList.remove('show');
-                editPanel.classList.add('show');
+                hidePanel(passwordPanel);
+                showPanel(linksPanel);
             } else {
                 alert('Senha incorreta!');
                 passwordInput.value = '';
@@ -571,168 +725,155 @@
         });
         
         cancelPassword.addEventListener('click', () => {
-            passwordModal.classList.remove('show');
+            hidePanel(passwordPanel);
         });
         
-        // Cancel edit
-        cancelEdit.addEventListener('click', () => {
-            editPanel.classList.remove('show');
-            clearEditFields();
-        });
-        
-        // Edit select change
-        editSelect.addEventListener('change', (e) => {
-            clearEditFields();
-            currentEditItem = e.target.value;
-            
-            switch (currentEditItem) {
-                case 'profile-pic':
-                    editFieldsContainer.innerHTML = `
-                        <div class="edit-field">
-                            <label for="image-url">URL da Nova Imagem:</label>
-                            <input type="text" id="image-url" class="edit-input" placeholder="Cole a URL da imagem">
-                        </div>
-                    `;
-                    break;
-                    
-                case 'about-content':
-                    editFieldsContainer.innerHTML = `
-                        <div class="edit-field">
-                            <label for="about-text">Texto Sobre:</label>
-                            <textarea id="about-text" class="edit-input">${document.getElementById('about-content').innerText}</textarea>
-                        </div>
-                    `;
-                    break;
-                    
-                case 'linkedin-btn':
-                case 'github-btn':
-                case 'whatsapp-btn':
-                    const btnId = currentEditItem.replace('-btn', '');
-                    const currentLink = document.getElementById(currentEditItem).href;
-                    editFieldsContainer.innerHTML = `
-                        <div class="edit-field">
-                            <label for="link-url">Novo Link para ${btnId.charAt(0).toUpperCase() + btnId.slice(1)}:</label>
-                            <input type="text" id="link-url" class="edit-input" placeholder="Cole o URL do link" value="${currentLink}">
-                        </div>
-                    `;
-                    break;
-                    
-                case 'resume-btn':
-                    editFieldsContainer.innerHTML = `
-                        <div class="edit-field">
-                            <label for="resume-file">Enviar Novo Currículo (PDF):</label>
-                            <input type="file" id="resume-file" class="edit-input" accept=".pdf">
-                        </div>
-                    `;
-                    break;
-                    
-                case 'add-project':
-                    editFieldsContainer.innerHTML = `
-                        <div class="edit-field">
-                            <label for="project-title">Título do Projeto:</label>
-                            <input type="text" id="project-title" class="edit-input" placeholder="Título do projeto">
-                        </div>
-                        <div class="edit-field">
-                            <label for="project-description">Descrição:</label>
-                            <textarea id="project-description" class="edit-input" placeholder="Descrição do projeto"></textarea>
-                        </div>
-                        <div class="edit-field">
-                            <label for="project-image">URL da Imagem:</label>
-                            <input type="text" id="project-image" class="edit-input" placeholder="Cole a URL da imagem">
-                        </div>
-                        <div class="edit-field">
-                            <label for="project-link">Link do Projeto:</label>
-                            <input type="text" id="project-link" class="edit-input" placeholder="Cole o URL do projeto">
-                        </div>
-                    `;
-                    break;
+        // Profile pic editing
+        document.getElementById('profile-pic').addEventListener('click', (e) => {
+            if (isAuthenticated) {
+                profilePicPreview.src = e.target.src;
+                showPanel(profilePicPanel);
             }
         });
         
-        // Save changes
-        saveEdit.addEventListener('click', () => {
-            if (!currentEditItem) return;
-            
-            switch (currentEditItem) {
-                case 'profile-pic':
-                    const imageUrl = document.getElementById('image-url').value;
-                    if (imageUrl) {
-                        document.getElementById('profile-pic').src = imageUrl;
-                        alert('Foto de perfil atualizada com sucesso!');
-                    }
-                    break;
-                    
-                case 'about-content':
-                    const aboutText = document.getElementById('about-text').value;
-                    document.getElementById('about-content').innerText = aboutText;
-                    alert('Texto sobre atualizado com sucesso!');
-                    break;
-                    
-                case 'linkedin-btn':
-                case 'github-btn':
-                case 'whatsapp-btn':
-                    const linkUrl = document.getElementById('link-url').value;
-                    if (linkUrl) {
-                        document.getElementById(currentEditItem).href = linkUrl;
-                        alert(`Link ${currentEditItem.replace('-btn', '')} atualizado com sucesso!`);
-                    }
-                    break;
-                    
-                case 'resume-btn':
-                    const resumeFile = document.getElementById('resume-file').files[0];
-                    if (resumeFile) {
-                        // In a real implementation, you would upload this file to a server
-                        alert('Currículo atualizado com sucesso! (Simulação - em um sistema real, o arquivo seria enviado ao servidor)');
-                    }
-                    break;
-                    
-                case 'add-project':
-                    const projectTitle = document.getElementById('project-title').value;
-                    const projectDescription = document.getElementById('project-description').value;
-                    const projectImage = document.getElementById('project-image').value || 'https://via.placeholder.com/300x180';
-                    const projectLink = document.getElementById('project-link').value || '#';
-                    
-                    if (projectTitle && projectDescription) {
-                        const projectsContainer = document.getElementById('projects-container');
-                        const newProject = document.createElement('div');
-                        newProject.className = 'project-card';
-                        newProject.innerHTML = `
-                            <img src="${projectImage}" alt="${projectTitle}" class="project-image">
-                            <div class="project-info">
-                                <h3 class="project-title">${projectTitle}</h3>
-                                <p class="project-description">${projectDescription}</p>
-                                <a href="${projectLink}" class="project-link">Ver Projeto</a>
-                            </div>
-                        `;
-                        projectsContainer.appendChild(newProject);
-                        alert('Projeto adicionado com sucesso!');
-                    }
-                    break;
+        profilePicFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    profilePicPreview.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
             }
-            
-            editPanel.classList.remove('show');
-            clearEditFields();
         });
         
-        // Helper function to clear edit fields
-        function clearEditFields() {
-            editFieldsContainer.innerHTML = '';
-            currentEditItem = null;
-            editSelect.value = '';
+        saveProfilePic.addEventListener('click', () => {
+            document.getElementById('profile-pic').src = profilePicPreview.src;
+            hidePanel(profilePicPanel);
+            alert('Foto de perfil atualizada com sucesso!');
+        });
+        
+        cancelProfilePic.addEventListener('click', () => {
+            hidePanel(profilePicPanel);
+        });
+        
+        // About editing
+        document.getElementById('about-section').addEventListener('click', (e) => {
+            if (isAuthenticated) {
+                aboutText.value = document.getElementById('about-content').innerText;
+                showPanel(aboutPanel);
+            }
+        });
+        
+        saveAbout.addEventListener('click', () => {
+            document.getElementById('about-content').innerText = aboutText.value;
+            hidePanel(aboutPanel);
+            alert('Texto sobre atualizado com sucesso!');
+        });
+        
+        cancelAbout.addEventListener('click', () => {
+            hidePanel(aboutPanel);
+        });
+        
+        // Links editing
+        saveLinks.addEventListener('click', () => {
+            document.getElementById('linkedin-btn').href = linkedinLink.value || '#';
+            document.getElementById('github-btn').href = githubLink.value || '#';
+            document.getElementById('whatsapp-btn').href = whatsappLink.value || '#';
+            hidePanel(linksPanel);
+            alert('Links atualizados com sucesso!');
+        });
+        
+        cancelLinks.addEventListener('click', () => {
+            hidePanel(linksPanel);
+        });
+        
+        // Resume editing
+        document.getElementById('resume-btn').addEventListener('click', (e) => {
+            if (isAuthenticated && e.target.tagName !== 'A') {
+                e.preventDefault();
+                showPanel(resumePanel);
+            }
+        });
+        
+        saveResume.addEventListener('click', () => {
+            if (resumeFile.files[0]) {
+                // In a real implementation, you would upload this file to a server
+                alert('Currículo atualizado com sucesso! (Simulação - em um sistema real, o arquivo seria enviado ao servidor)');
+                hidePanel(resumePanel);
+            } else {
+                alert('Por favor, selecione um arquivo PDF.');
+            }
+        });
+        
+        cancelResume.addEventListener('click', () => {
+            hidePanel(resumePanel);
+        });
+        
+        // Project editing
+        saveProject.addEventListener('click', () => {
+            if (!projectTitle.value || !projectDescription.value) {
+                alert('Por favor, preencha pelo menos o título e a descrição do projeto.');
+                return;
+            }
+            
+            const projectsContainer = document.getElementById('projects-container');
+            const newProject = document.createElement('div');
+            newProject.className = 'project-card';
+            
+            const imageSrc = projectImagePreview.src || 'https://via.placeholder.com/300x180';
+            const projectLinkValue = projectLink.value || '#';
+            
+            newProject.innerHTML = `
+                <img src="${imageSrc}" alt="${projectTitle.value}" class="project-image">
+                <div class="project-info">
+                    <h3 class="project-title">${projectTitle.value}</h3>
+                    <p class="project-description">${projectDescription.value}</p>
+                    <a href="${projectLinkValue}" class="project-link">Ver Projeto</a>
+                </div>
+            `;
+            
+            projectsContainer.appendChild(newProject);
+            hidePanel(projectPanel);
+            resetProjectForm();
+            alert('Projeto adicionado com sucesso!');
+        });
+        
+        cancelProject.addEventListener('click', () => {
+            hidePanel(projectPanel);
+            resetProjectForm();
+        });
+        
+        projectImageFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    projectImagePreview.src = event.target.result;
+                    projectImagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Helper functions
+        function showPanel(panel) {
+            document.querySelectorAll('.edit-panel').forEach(p => p.classList.remove('show'));
+            panel.classList.add('show');
         }
         
-        // Make editable items clickable in edit mode
-        document.querySelectorAll('.editable').forEach(item => {
-            item.addEventListener('click', (e) => {
-                if (isAuthenticated) {
-                    const id = e.currentTarget.id;
-                    editSelect.value = id;
-                    const event = new Event('change');
-                    editSelect.dispatchEvent(event);
-                    editPanel.classList.add('show');
-                }
-            });
-        });
+        function hidePanel(panel) {
+            panel.classList.remove('show');
+        }
+        
+        function resetProjectForm() {
+            projectTitle.value = '';
+            projectDescription.value = '';
+            projectImageFile.value = '';
+            projectImagePreview.src = '';
+            projectImagePreview.style.display = 'none';
+            projectLink.value = '';
+        }
         
         // Initialize social links with placeholder values
         document.getElementById('linkedin-btn').href = '#';
