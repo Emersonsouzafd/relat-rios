@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #333333; /* Mais cinza */
+            --primary-color: #333333;
             --secondary-color: #444444;
             --accent-color: #666666;
             --text-color: #f5f5f5;
@@ -472,6 +472,44 @@
             display: none;
         }
 
+        /* Resume Management */
+        .resume-management {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        
+        .resume-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .resume-action-btn {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .update-resume-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .remove-resume-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .resume-status {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            color: var(--highlight-color);
+        }
+
         /* Password Modal */
         .modal {
             display: none;
@@ -728,13 +766,32 @@
         </div>
         
         <div class="edit-panel" id="resume-panel">
-            <h3 class="edit-panel-title">Editar Currículo</h3>
-            <div class="edit-field">
-                <label for="resume-file" class="file-input-label">
-                    <i class="fas fa-cloud-upload-alt"></i> Selecionar Arquivo PDF
-                </label>
-                <input type="file" id="resume-file" class="file-input" accept=".pdf">
+            <h3 class="edit-panel-title">Gerenciar Currículo</h3>
+            <div class="resume-management">
+                <div class="edit-field">
+                    <label for="resume-file" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i> Selecionar Arquivo PDF
+                    </label>
+                    <input type="file" id="resume-file" class="file-input" accept=".pdf">
+                </div>
+                
+                <div id="current-resume-info" style="display: none;">
+                    <p class="resume-status">Currículo atual: <span id="resume-filename">Nenhum arquivo selecionado</span></p>
+                    <div class="resume-actions">
+                        <button class="resume-action-btn update-resume-btn" id="update-resume-btn">
+                            <i class="fas fa-sync-alt"></i> Atualizar
+                        </button>
+                        <button class="resume-action-btn remove-resume-btn" id="remove-resume-btn">
+                            <i class="fas fa-trash-alt"></i> Remover
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="no-resume-info" style="display: none;">
+                    <p class="resume-status">Nenhum currículo cadastrado</p>
+                </div>
             </div>
+            
             <div class="edit-actions">
                 <button class="cancel-btn" id="cancel-resume">Cancelar</button>
                 <button class="save-btn" id="save-resume">Salvar</button>
@@ -813,6 +870,11 @@
         const saveResume = document.getElementById('save-resume');
         const cancelResume = document.getElementById('cancel-resume');
         const resumeBtn = document.getElementById('resume-btn');
+        const updateResumeBtn = document.getElementById('update-resume-btn');
+        const removeResumeBtn = document.getElementById('remove-resume-btn');
+        const resumeFilename = document.getElementById('resume-filename');
+        const currentResumeInfo = document.getElementById('current-resume-info');
+        const noResumeInfo = document.getElementById('no-resume-info');
         
         // Project elements
         const projectPanel = document.getElementById('project-panel');
@@ -841,6 +903,7 @@
                 whatsapp: '#'
             },
             resume: null,
+            resumeName: null,
             projects: []
         };
         
@@ -864,11 +927,8 @@
                 addProjectToDOM(project, index);
             });
             
-            // Set resume download
-            if (portfolioData.resume) {
-                resumeBtn.href = portfolioData.resume;
-                resumeBtn.download = 'Curriculo_Emerson_Flores.pdf';
-            }
+            // Set resume info
+            updateResumeInfo();
             
             // Update scrollbar visibility
             updateProjectsScrollbar();
@@ -904,9 +964,6 @@
                     deleteProject(index);
                 });
             }
-            
-            // Update scrollbar visibility after adding project
-            updateProjectsScrollbar();
         }
         
         // Update projects scrollbar visibility
@@ -915,6 +972,22 @@
                 projectsContainer.classList.add('has-scrollbar');
             } else {
                 projectsContainer.classList.remove('has-scrollbar');
+            }
+        }
+        
+        // Update resume information in the UI
+        function updateResumeInfo() {
+            if (portfolioData.resume) {
+                resumeBtn.href = portfolioData.resume;
+                resumeBtn.download = portfolioData.resumeName || 'Curriculo_Emerson_Flores.pdf';
+                resumeFilename.textContent = portfolioData.resumeName || 'Currículo atual';
+                currentResumeInfo.style.display = 'block';
+                noResumeInfo.style.display = 'none';
+            } else {
+                resumeBtn.href = '#';
+                resumeBtn.removeAttribute('download');
+                currentResumeInfo.style.display = 'none';
+                noResumeInfo.style.display = 'block';
             }
         }
         
@@ -1094,6 +1167,32 @@
             if (isAuthenticated && e.target.tagName !== 'A') {
                 e.preventDefault();
                 showPanel(resumePanel);
+                document.getElementById('resume-file').value = '';
+                document.getElementById('save-resume').disabled = true;
+            } else if (!portfolioData.resume) {
+                e.preventDefault();
+                alert('Nenhum currículo disponível para download.');
+            }
+        });
+        
+        updateResumeBtn.addEventListener('click', () => {
+            document.getElementById('resume-file').click();
+        });
+        
+        removeResumeBtn.addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja remover o currículo atual?')) {
+                portfolioData.resume = null;
+                portfolioData.resumeName = null;
+                saveData();
+                updateResumeInfo();
+                alert('Currículo removido com sucesso!');
+            }
+        });
+        
+        resumeFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('save-resume').disabled = false;
             }
         });
         
@@ -1103,15 +1202,19 @@
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     portfolioData.resume = event.target.result;
-                    resumeBtn.href = event.target.result;
-                    resumeBtn.download = file.name || 'Curriculo_Emerson_Flores.pdf';
+                    portfolioData.resumeName = file.name;
                     saveData();
+                    updateResumeInfo();
                     hidePanel(resumePanel);
                     alert('Currículo atualizado com sucesso!');
                 };
                 reader.readAsDataURL(file);
             } else {
-                alert('Por favor, selecione um arquivo PDF.');
+                if (!portfolioData.resume) {
+                    alert('Por favor, selecione um arquivo PDF.');
+                } else {
+                    hidePanel(resumePanel);
+                }
             }
         });
         
