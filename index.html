@@ -271,9 +271,11 @@
             bottom: 20px;
             right: 20px;
             z-index: 100;
+            display: flex;
+            gap: 10px;
         }
 
-        .edit-btn {
+        .edit-btn, .projects-edit-btn {
             background-color: #27ae60;
             color: white;
             border: none;
@@ -284,11 +286,22 @@
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .edit-btn:hover {
+        .edit-btn:hover, .projects-edit-btn:hover {
             background-color: #2ecc71;
             transform: scale(1.1);
+        }
+
+        .projects-edit-btn {
+            background-color: #3498db;
+        }
+
+        .projects-edit-btn:hover {
+            background-color: #2980b9;
         }
 
         .edit-panel {
@@ -490,6 +503,33 @@
             background-color: #c0392b;
         }
 
+        /* Add Project Button */
+        .add-project-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .add-project-btn {
+            padding: 0.8rem 1.5rem;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        .add-project-btn.show {
+            display: block;
+        }
+
+        .add-project-btn:hover {
+            background-color: #2ecc71;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -518,6 +558,12 @@
                 width: 95%;
                 padding: 1.5rem;
             }
+            
+            .edit-mode {
+                flex-direction: column;
+                bottom: 80px;
+                right: 20px;
+            }
         }
     </style>
 </head>
@@ -525,10 +571,10 @@
     <div class="container">
         <!-- Sidebar -->
         <div class="sidebar">
-            <img src="https://via.placeholder.com/150" alt="Foto de Perfil" class="profile-pic editable" id="profile-pic">
+            <img src="https://via.placeholder.com/150" alt="Foto de Perfil" class="profile-pic" id="profile-pic">
             <h1 class="name">EMERSON FLORES DE SOUZA</h1>
             
-            <div class="about editable" id="about-section">
+            <div class="about" id="about-section">
                 <h3 class="about-title">SOBRE</h3>
                 <p class="about-content" id="about-content">
                     Profissional dedicado e apaixonado por tecnologia. Com experiência em desenvolvimento web e soluções inovadoras, sempre buscando aprender e compartilhar conhecimento.
@@ -555,6 +601,12 @@
         <div class="main-content">
             <h2 class="section-title">PROJETOS</h2>
             
+            <div class="add-project-container">
+                <button class="add-project-btn" id="add-project-btn">
+                    <i class="fas fa-plus"></i> Adicionar Projeto
+                </button>
+            </div>
+            
             <div class="projects-container" id="projects-container">
                 <!-- Project cards will be added dynamically -->
             </div>
@@ -562,8 +614,11 @@
         
         <!-- Edit Mode -->
         <div class="edit-mode">
-            <button class="edit-btn" id="edit-btn">
-                <i class="fas fa-edit"></i>
+            <button class="projects-edit-btn" id="projects-edit-btn" title="Editar Projetos">
+                <i class="fas fa-project-diagram"></i>
+            </button>
+            <button class="edit-btn" id="edit-btn" title="Editar Perfil">
+                <i class="fas fa-user-edit"></i>
             </button>
         </div>
         
@@ -670,6 +725,8 @@
     <script>
         // Elements
         const editBtn = document.getElementById('edit-btn');
+        const projectsEditBtn = document.getElementById('projects-edit-btn');
+        const addProjectBtn = document.getElementById('add-project-btn');
         const passwordPanel = document.getElementById('password-panel');
         const passwordInput = document.getElementById('password-input');
         const confirmPassword = document.getElementById('confirm-password');
@@ -724,6 +781,7 @@
         // Correct password
         const CORRECT_PASSWORD = '123';
         let isAuthenticated = false;
+        let isProjectsEditMode = false;
         
         // Data storage
         let portfolioData = {
@@ -770,10 +828,12 @@
             const projectCard = document.createElement('div');
             projectCard.className = 'project-card';
             projectCard.innerHTML = `
+                ${isProjectsEditMode ? `
                 <div class="project-actions">
                     <button class="edit-project-btn" data-index="${index}"><i class="fas fa-edit"></i></button>
                     <button class="delete-project-btn" data-index="${index}"><i class="fas fa-trash"></i></button>
                 </div>
+                ` : ''}
                 <img src="${project.image}" alt="${project.title}" class="project-image">
                 <div class="project-info">
                     <h3 class="project-title">${project.title}</h3>
@@ -783,18 +843,16 @@
             `;
             projectsContainer.appendChild(projectCard);
             
-            // Add event listeners for edit and delete buttons
-            projectCard.querySelector('.edit-project-btn').addEventListener('click', (e) => {
-                if (isAuthenticated) {
+            // Add event listeners for edit and delete buttons if in edit mode
+            if (isProjectsEditMode) {
+                projectCard.querySelector('.edit-project-btn').addEventListener('click', (e) => {
                     editProject(index);
-                }
-            });
-            
-            projectCard.querySelector('.delete-project-btn').addEventListener('click', (e) => {
-                if (isAuthenticated) {
+                });
+                
+                projectCard.querySelector('.delete-project-btn').addEventListener('click', (e) => {
                     deleteProject(index);
-                }
-            });
+                });
+            }
         }
         
         // Edit project
@@ -833,20 +891,49 @@
             });
         }
         
+        // Toggle projects edit mode
+        function toggleProjectsEditMode() {
+            isProjectsEditMode = !isProjectsEditMode;
+            addProjectBtn.style.display = isProjectsEditMode ? 'block' : 'none';
+            refreshProjects();
+        }
+        
         // Save data to localStorage
         function saveData() {
             localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
         }
         
-        // Toggle edit panel
+        // Event Listeners
+        
+        // Toggle edit panels
         editBtn.addEventListener('click', () => {
             if (!isAuthenticated) {
                 showPanel(passwordPanel);
                 passwordInput.focus();
             } else {
-                // If already authenticated, show the links panel by default
                 showPanel(linksPanel);
             }
+        });
+        
+        projectsEditBtn.addEventListener('click', () => {
+            if (!isAuthenticated) {
+                showPanel(passwordPanel);
+                passwordInput.focus();
+            } else {
+                toggleProjectsEditMode();
+            }
+        });
+        
+        addProjectBtn.addEventListener('click', () => {
+            projectPanelTitle.textContent = 'Adicionar Novo Projeto';
+            editingProjectIndex.value = '-1';
+            projectTitle.value = '';
+            projectDescription.value = '';
+            projectImageFile.value = '';
+            projectImagePreview.src = '';
+            projectImagePreview.style.display = 'none';
+            projectLink.value = '';
+            showPanel(projectPanel);
         });
         
         // Password verification
@@ -854,7 +941,6 @@
             if (passwordInput.value === CORRECT_PASSWORD) {
                 isAuthenticated = true;
                 hidePanel(passwordPanel);
-                showPanel(linksPanel);
                 passwordInput.value = '';
             } else {
                 alert('Senha incorreta!');
