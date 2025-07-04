@@ -61,6 +61,12 @@
             border-radius: 50%;
             object-fit: cover;
             border: 5px solid var(--accent-color);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .profile-pic:hover {
+            transform: scale(1.05);
         }
 
         .profile-name {
@@ -128,6 +134,7 @@
             padding-bottom: 20px;
             scrollbar-width: thin;
             scrollbar-color: var(--accent-color) var(--secondary-color);
+            min-height: 100px;
         }
 
         .projects-container::-webkit-scrollbar {
@@ -151,6 +158,7 @@
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             transition: transform 0.3s ease;
+            position: relative;
         }
 
         .project-card:hover {
@@ -161,6 +169,7 @@
             width: 100%;
             height: 180px;
             object-fit: cover;
+            cursor: pointer;
         }
 
         .project-info {
@@ -193,6 +202,27 @@
 
         .project-link:hover {
             background-color: #2980b9;
+        }
+
+        .add-project-btn {
+            display: none;
+            padding: 10px 20px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .add-project-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .edit-mode .add-project-btn {
+            display: inline-block;
         }
 
         .edit-btn {
@@ -280,6 +310,27 @@
             border-radius: 3px;
         }
 
+        .delete-project {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            display: none;
+        }
+
+        .edit-mode .delete-project {
+            display: flex;
+        }
+
         footer {
             text-align: center;
             padding: 20px;
@@ -317,16 +368,16 @@
                     Sou um profissional dedicado e apaixonado por tecnologia. Com experiência em diversas áreas, busco constantemente aprender e me desenvolver. Este portfólio apresenta alguns dos meus projetos mais relevantes.
                 </div>
                 <div class="social-links">
-                    <a id="linkedinBtn" href="https://linkedin.com" class="social-btn" target="_blank">
+                    <a id="linkedinBtn" href="https://linkedin.com" class="social-btn editable" data-editable-type="link" target="_blank">
                         <i class="fab fa-linkedin"></i> LinkedIn
                     </a>
-                    <a id="githubBtn" href="https://github.com" class="social-btn" target="_blank">
+                    <a id="githubBtn" href="https://github.com" class="social-btn editable" data-editable-type="link" target="_blank">
                         <i class="fab fa-github"></i> GitHub
                     </a>
-                    <a id="whatsappBtn" href="https://wa.me/" class="social-btn" target="_blank">
+                    <a id="whatsappBtn" href="https://wa.me/" class="social-btn editable" data-editable-type="link" target="_blank">
                         <i class="fab fa-whatsapp"></i> WhatsApp
                     </a>
-                    <a id="resumeBtn" href="#" class="social-btn" target="_blank">
+                    <a id="resumeBtn" href="#" class="social-btn editable" data-editable-type="link" target="_blank">
                         <i class="fas fa-download"></i> Baixar CV
                     </a>
                 </div>
@@ -337,31 +388,10 @@
             <h2>Projetos</h2>
             <div id="projectsContainer" class="projects-container">
                 <!-- Projetos serão adicionados dinamicamente -->
-                <div class="project-card">
-                    <img src="https://via.placeholder.com/300x180" alt="Projeto 1" class="project-image">
-                    <div class="project-info">
-                        <h3 class="project-title editable">Nome do Projeto 1</h3>
-                        <p class="project-description editable">Descrição breve do projeto. O que foi feito, tecnologias utilizadas e objetivos alcançados.</p>
-                        <a href="#" class="project-link editable" data-link="project-link">Ver Projeto</a>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <img src="https://via.placeholder.com/300x180" alt="Projeto 2" class="project-image">
-                    <div class="project-info">
-                        <h3 class="project-title editable">Nome do Projeto 2</h3>
-                        <p class="project-description editable">Descrição breve do projeto. O que foi feito, tecnologias utilizadas e objetivos alcançados.</p>
-                        <a href="#" class="project-link editable" data-link="project-link">Ver Projeto</a>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <img src="https://via.placeholder.com/300x180" alt="Projeto 3" class="project-image">
-                    <div class="project-info">
-                        <h3 class="project-title editable">Nome do Projeto 3</h3>
-                        <p class="project-description editable">Descrição breve do projeto. O que foi feito, tecnologias utilizadas e objetivos alcançados.</p>
-                        <a href="#" class="project-link editable" data-link="project-link">Ver Projeto</a>
-                    </div>
-                </div>
             </div>
+            <button id="addProjectBtn" class="add-project-btn">
+                <i class="fas fa-plus"></i> Adicionar Projeto
+            </button>
         </section>
     </div>
 
@@ -419,6 +449,7 @@
         const whatsappBtn = document.getElementById('whatsappBtn');
         const resumeBtn = document.getElementById('resumeBtn');
         const projectsContainer = document.getElementById('projectsContainer');
+        const addProjectBtn = document.getElementById('addProjectBtn');
 
         // Senha para edição
         const EDIT_PASSWORD = "123";
@@ -447,24 +478,157 @@
                     }
 
                     // Carrega projetos
-                    if (data.projects) {
+                    if (data.projects && data.projects.length > 0) {
                         projectsContainer.innerHTML = '';
-                        data.projects.forEach(project => {
-                            const projectCard = document.createElement('div');
-                            projectCard.className = 'project-card';
-                            projectCard.innerHTML = `
-                                <img src="${project.imageUrl || 'https://via.placeholder.com/300x180'}" alt="${project.title}" class="project-image">
-                                <div class="project-info">
-                                    <h3 class="project-title editable">${project.title || 'Nome do Projeto'}</h3>
-                                    <p class="project-description editable">${project.description || 'Descrição do projeto'}</p>
-                                    <a href="${project.link || '#'}" class="project-link editable" data-link="project-link">Ver Projeto</a>
-                                </div>
-                            `;
-                            projectsContainer.appendChild(projectCard);
+                        data.projects.forEach((project, index) => {
+                            addProjectToUI(project, index);
                         });
                     }
                 }
+            }).catch(error => {
+                console.error("Erro ao carregar dados:", error);
             });
+        }
+
+        // Adiciona um projeto à interface
+        function addProjectToUI(projectData, index) {
+            const projectCard = document.createElement('div');
+            projectCard.className = 'project-card';
+            projectCard.dataset.index = index;
+            
+            projectCard.innerHTML = `
+                <img src="${projectData.imageUrl || 'https://via.placeholder.com/300x180'}" 
+                     alt="${projectData.title || 'Projeto'}" 
+                     class="project-image editable" 
+                     data-editable-type="image">
+                <button class="delete-project" data-index="${index}">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="project-info">
+                    <h3 class="project-title editable">${projectData.title || 'Nome do Projeto'}</h3>
+                    <p class="project-description editable">${projectData.description || 'Descrição do projeto'}</p>
+                    <a href="${projectData.link || '#'}" 
+                       class="project-link editable" 
+                       data-editable-type="link">Ver Projeto</a>
+                </div>
+            `;
+            
+            projectsContainer.appendChild(projectCard);
+            setupProjectCardEvents(projectCard);
+        }
+
+        // Configura eventos para um cartão de projeto
+        function setupProjectCardEvents(projectCard) {
+            if (editMode) {
+                const projectImage = projectCard.querySelector('.project-image');
+                projectImage.addEventListener('click', function() {
+                    uploadProjectImage(this);
+                });
+                
+                const deleteBtn = projectCard.querySelector('.delete-project');
+                deleteBtn.addEventListener('click', function() {
+                    if (confirm('Tem certeza que deseja excluir este projeto?')) {
+                        projectCard.remove();
+                        saveData();
+                    }
+                });
+            }
+        }
+
+        // Upload da imagem de perfil
+        function uploadProfileImage() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                try {
+                    // Mostra feedback visual de carregamento
+                    profileImage.style.opacity = '0.5';
+                    
+                    // Faz upload para o Firebase Storage
+                    const storageRef = storage.ref('profile/' + file.name);
+                    const uploadTask = storageRef.put(file);
+                    
+                    // Aguarda o upload completar
+                    await new Promise((resolve, reject) => {
+                        uploadTask.on('state_changed',
+                            null,
+                            (error) => reject(error),
+                            () => resolve()
+                        );
+                    });
+                    
+                    // Obtém a URL de download
+                    const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                    
+                    // Atualiza a imagem na interface
+                    profileImage.src = downloadURL;
+                    profileImage.style.opacity = '1';
+                    
+                    // Salva no banco de dados
+                    saveData();
+                } catch (error) {
+                    console.error("Erro no upload:", error);
+                    alert("Erro ao fazer upload da imagem");
+                    profileImage.style.opacity = '1';
+                }
+            };
+            
+            input.click();
+        }
+
+        // Upload da imagem de um projeto
+        function uploadProjectImage(imgElement) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const projectCard = imgElement.closest('.project-card');
+                const projectIndex = projectCard.dataset.index;
+                
+                try {
+                    // Mostra feedback visual de carregamento
+                    imgElement.style.opacity = '0.5';
+                    
+                    // Faz upload para o Firebase Storage
+                    const fileName = `projects/project_${projectIndex}_${Date.now()}_${file.name}`;
+                    const storageRef = storage.ref(fileName);
+                    const uploadTask = storageRef.put(file);
+                    
+                    // Aguarda o upload completar
+                    await new Promise((resolve, reject) => {
+                        uploadTask.on('state_changed',
+                            null,
+                            (error) => reject(error),
+                            () => resolve()
+                        );
+                    });
+                    
+                    // Obtém a URL de download
+                    const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                    
+                    // Atualiza a imagem na interface
+                    imgElement.src = downloadURL;
+                    imgElement.style.opacity = '1';
+                    
+                    // Salva no banco de dados
+                    saveData();
+                } catch (error) {
+                    console.error("Erro no upload:", error);
+                    alert("Erro ao fazer upload da imagem");
+                    imgElement.style.opacity = '1';
+                }
+            };
+            
+            input.click();
         }
 
         // Salva os dados no Firebase
@@ -487,7 +651,7 @@
                 projectsData.push({
                     title: card.querySelector('.project-title').textContent,
                     description: card.querySelector('.project-description').textContent,
-                    imageUrl: card.querySelector('img').src,
+                    imageUrl: card.querySelector('.project-image').src,
                     link: card.querySelector('.project-link').href
                 });
             });
@@ -496,6 +660,10 @@
                 profile: profileData,
                 socialLinks: socialLinksData,
                 projects: projectsData
+            }).then(() => {
+                console.log("Dados salvos com sucesso!");
+            }).catch(error => {
+                console.error("Erro ao salvar dados:", error);
             });
         }
 
@@ -507,150 +675,86 @@
             // Habilita/desabilita a edição dos elementos
             document.querySelectorAll('.editable').forEach(element => {
                 element.contentEditable = editMode;
+                
+                // Para elementos de link, mostra o href quando em modo de edição
+                if (element.dataset.editableType === 'link') {
+                    if (editMode) {
+                        element.setAttribute('data-original-href', element.href);
+                        element.href = 'javascript:void(0);';
+                        element.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const newLink = prompt("Digite o novo link:", this.getAttribute('data-original-href'));
+                            if (newLink !== null) {
+                                this.setAttribute('data-original-href', newLink);
+                                saveData();
+                            }
+                        });
+                    } else {
+                        const originalHref = element.getAttribute('data-original-href');
+                        if (originalHref) {
+                            element.href = originalHref;
+                        }
+                    }
+                }
             });
 
-            // Configura eventos para elementos editáveis
+            // Configura eventos específicos do modo de edição
             if (editMode) {
-                document.querySelectorAll('.editable').forEach(element => {
-                    element.addEventListener('blur', saveData);
-                });
-
-                // Configura o upload de imagem de perfil
-                profileImage.addEventListener('click', function() {
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = 'image/*';
-                    input.onchange = e => {
-                        const file = e.target.files[0];
-                        const storageRef = storage.ref('profile/' + file.name);
-                        const uploadTask = storageRef.put(file);
-                        
-                        uploadTask.on('state_changed', 
-                            null, 
-                            (error) => {
-                                console.error('Upload failed:', error);
-                            }, 
-                            () => {
-                                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                                    profileImage.src = downloadURL;
-                                    saveData();
-                                });
-                            }
-                        );
-                    };
-                    input.click();
-                });
-
-                // Configura o upload de imagens de projetos
-                document.querySelectorAll('.project-image').forEach(img => {
-                    img.addEventListener('click', function() {
-                        const input = document.createElement('input');
-                        input.type = 'file';
-                        input.accept = 'image/*';
-                        input.onchange = e => {
-                            const file = e.target.files[0];
-                            const projectCard = this.closest('.project-card');
-                            const projectIndex = Array.from(projectCard.parentNode.children).indexOf(projectCard);
-                            const storageRef = storage.ref('projects/project_' + projectIndex + '_' + file.name);
-                            const uploadTask = storageRef.put(file);
-                            
-                            uploadTask.on('state_changed', 
-                                null, 
-                                (error) => {
-                                    console.error('Upload failed:', error);
-                                }, 
-                                () => {
-                                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                                        this.src = downloadURL;
-                                        saveData();
-                                    });
-                                }
-                            );
-                        };
-                        input.click();
-                    });
-                });
-
-                // Adiciona botão para adicionar novo projeto
-                const addProjectBtn = document.createElement('button');
-                addProjectBtn.textContent = '+ Adicionar Projeto';
-                addProjectBtn.style.marginTop = '20px';
-                addProjectBtn.style.padding = '10px 15px';
-                addProjectBtn.style.backgroundColor = 'var(--accent-color)';
-                addProjectBtn.style.color = 'white';
-                addProjectBtn.style.border = 'none';
-                addProjectBtn.style.borderRadius = '5px';
-                addProjectBtn.style.cursor = 'pointer';
-                addProjectBtn.onclick = function() {
-                    const newProject = document.createElement('div');
-                    newProject.className = 'project-card';
-                    newProject.innerHTML = `
-                        <img src="https://via.placeholder.com/300x180" alt="Novo Projeto" class="project-image">
-                        <div class="project-info">
-                            <h3 class="project-title editable">Novo Projeto</h3>
-                            <p class="project-description editable">Descrição do novo projeto</p>
-                            <a href="#" class="project-link editable" data-link="project-link">Ver Projeto</a>
-                        </div>
-                    `;
-                    projectsContainer.appendChild(newProject);
-                    saveData();
-                    
-                    // Configura o upload de imagem para o novo projeto
-                    newProject.querySelector('.project-image').addEventListener('click', function() {
-                        const input = document.createElement('input');
-                        input.type = 'file';
-                        input.accept = 'image/*';
-                        input.onchange = e => {
-                            const file = e.target.files[0];
-                            const projectCard = this.closest('.project-card');
-                            const projectIndex = Array.from(projectCard.parentNode.children).indexOf(projectCard);
-                            const storageRef = storage.ref('projects/project_' + projectIndex + '_' + file.name);
-                            const uploadTask = storageRef.put(file);
-                            
-                            uploadTask.on('state_changed', 
-                                null, 
-                                (error) => {
-                                    console.error('Upload failed:', error);
-                                }, 
-                                () => {
-                                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                                        this.src = downloadURL;
-                                        saveData();
-                                    });
-                                }
-                            );
-                        };
-                        input.click();
-                    });
-                };
+                // Foto de perfil
+                profileImage.addEventListener('click', uploadProfileImage);
                 
-                const projectsSection = document.querySelector('.projects-section');
-                if (!document.getElementById('addProjectBtn')) {
-                    addProjectBtn.id = 'addProjectBtn';
-                    projectsSection.appendChild(addProjectBtn);
-                }
+                // Projetos existentes
+                document.querySelectorAll('.project-card').forEach(card => {
+                    setupProjectCardEvents(card);
+                });
+                
+                // Botão de adicionar projeto
+                addProjectBtn.style.display = 'inline-block';
+                addProjectBtn.addEventListener('click', addNewProject);
+                
+                // Configura eventos para salvar quando o conteúdo é alterado
+                document.querySelectorAll('.editable').forEach(element => {
+                    if (element.dataset.editableType !== 'link') {
+                        element.addEventListener('blur', saveData);
+                    }
+                });
             } else {
-                // Remove eventos e botão de adicionar projeto
+                // Remove eventos do modo de edição
+                profileImage.removeEventListener('click', uploadProfileImage);
+                addProjectBtn.style.display = 'none';
+                addProjectBtn.removeEventListener('click', addNewProject);
+                
                 document.querySelectorAll('.editable').forEach(element => {
-                    element.removeEventListener('blur', saveData);
+                    if (element.dataset.editableType !== 'link') {
+                        element.removeEventListener('blur', saveData);
+                    }
                 });
                 
-                profileImage.removeEventListener('click', arguments.callee);
-                document.querySelectorAll('.project-image').forEach(img => {
-                    img.removeEventListener('click', arguments.callee);
+                document.querySelectorAll('.delete-project').forEach(btn => {
+                    btn.style.display = 'none';
                 });
-                
-                const addProjectBtn = document.getElementById('addProjectBtn');
-                if (addProjectBtn) {
-                    addProjectBtn.remove();
-                }
             }
+        }
+
+        // Adiciona um novo projeto
+        function addNewProject() {
+            const newProjectData = {
+                title: "Novo Projeto",
+                description: "Descrição do novo projeto",
+                imageUrl: "https://via.placeholder.com/300x180",
+                link: "#"
+            };
+            
+            const projectIndex = document.querySelectorAll('.project-card').length;
+            addProjectToUI(newProjectData, projectIndex);
+            saveData();
         }
 
         // Event Listeners
         editBtn.addEventListener('click', () => {
             if (!editMode) {
                 passwordModal.style.display = 'flex';
+                passwordInput.focus();
             } else {
                 toggleEditMode();
             }
@@ -670,6 +774,23 @@
         cancelPassword.addEventListener('click', () => {
             passwordModal.style.display = 'none';
             passwordInput.value = '';
+        });
+
+        // Fecha o modal ao pressionar Esc
+        passwordInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Escape') {
+                passwordModal.style.display = 'none';
+                passwordInput.value = '';
+            } else if (e.key === 'Enter') {
+                if (passwordInput.value === EDIT_PASSWORD) {
+                    passwordModal.style.display = 'none';
+                    passwordInput.value = '';
+                    toggleEditMode();
+                } else {
+                    alert('Senha incorreta!');
+                    passwordInput.value = '';
+                }
+            }
         });
 
         // Atualiza o ano no footer
