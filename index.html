@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -106,6 +107,7 @@
             border-radius: 5px;
             text-decoration: none;
             transition: all 0.3s;
+            position: relative;
         }
 
         .social-link:hover {
@@ -585,6 +587,7 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        const storage = firebase.storage();
 
         // DOM Elements
         const editModeBtn = document.getElementById('edit-mode-btn');
@@ -616,7 +619,7 @@
         let currentEditingSocialId = null;
         const PASSWORD = '123';
 
-        // Platform icons
+        // Platform icons and default links
         const platformIcons = {
             linkedin: 'fab fa-linkedin',
             github: 'fab fa-github',
@@ -624,12 +627,26 @@
             other: 'fas fa-link'
         };
 
-        // Platform names
         const platformNames = {
             linkedin: 'LinkedIn',
             github: 'GitHub',
             whatsapp: 'WhatsApp',
             other: 'Link'
+        };
+
+        const defaultSocialLinks = {
+            linkedin: {
+                platform: 'linkedin',
+                url: 'https://www.linkedin.com'
+            },
+            github: {
+                platform: 'github',
+                url: 'https://www.github.com'
+            },
+            whatsapp: {
+                platform: 'whatsapp',
+                url: 'https://wa.me'
+            }
         };
 
         // Initialize the app
@@ -692,7 +709,7 @@
         // Load data from Firebase
         function loadData() {
             // Load profile data
-            firebase.database().ref('profile').once('value').then(snapshot => {
+            database.ref('profile').once('value').then(snapshot => {
                 const data = snapshot.val();
                 if (data) {
                     if (data.photoUrl) {
@@ -708,14 +725,21 @@
             });
             
             // Load social links
-            firebase.database().ref('socialLinks').once('value').then(snapshot => {
+            database.ref('socialLinks').once('value').then(snapshot => {
                 const data = snapshot.val();
                 socialLinksContainer.innerHTML = '';
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        addSocialLinkToDOM(key, data[key]);
-                    });
+                
+                // If no social links exist, create default ones
+                if (!data) {
+                    database.ref('socialLinks').set(defaultSocialLinks);
+                    loadData(); // Reload data
+                    return;
                 }
+                
+                Object.keys(data).forEach(key => {
+                    addSocialLinkToDOM(key, data[key]);
+                });
+                
                 // Add "Add Link" button in edit mode
                 if (editMode) {
                     addAddSocialLinkButton();
@@ -723,7 +747,7 @@
             });
             
             // Load projects
-            firebase.database().ref('projects').once('value').then(snapshot => {
+            database.ref('projects').once('value').then(snapshot => {
                 const data = snapshot.val();
                 // Clear projects except the add button
                 projectsContainer.innerHTML = '';
@@ -789,19 +813,25 @@
         function handleProfilePicUpload(e) {
             const file = e.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    profilePic.src = e.target.result;
-                    // Save to Firebase
-                    saveProfilePhoto(e.target.result);
-                };
-                reader.readAsDataURL(file);
+                const storageRef = storage.ref(`profile/${file.name}`);
+                const uploadTask = storageRef.put(file);
+                
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // Progress monitoring can be added here
+                    }, 
+                    (error) => {
+                        console.error("Upload failed:", error);
+                    }, 
+                    () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            profilePic.src = downloadURL;
+                            // Save to Firebase
+                            database.ref('profile/photoUrl').set(downloadURL);
+                        });
+                    }
+                );
             }
-        }
-
-        // Save profile photo to Firebase
-        function saveProfilePhoto(photoUrl) {
-            firebase.database().ref('profile/photoUrl').set(photoUrl);
         }
 
         // Handle resume download/upload
@@ -815,11 +845,23 @@
         function handleResumeUpload(e) {
             const file = e.target.files[0];
             if (file) {
-                // In a real app, you would upload this file to storage
-                // For this example, we'll just save the file name
-                const resumeUrl = URL.createObjectURL(file);
-                resumeLink.href = resumeUrl;
-                firebase.database().ref('profile/resumeUrl').set(resumeUrl);
+                const storageRef = storage.ref(`resumes/${file.name}`);
+                const uploadTask = storageRef.put(file);
+                
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // Progress monitoring can be added here
+                    }, 
+                    (error) => {
+                        console.error("Upload failed:", error);
+                    }, 
+                    () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            resumeLink.href = downloadURL;
+                            database.ref('profile/resumeUrl').set(downloadURL);
+                        });
+                    }
+                );
             }
         }
 
@@ -868,7 +910,7 @@
                     e.preventDefault();
                     e.stopPropagation();
                     if (confirm('Tem certeza que deseja excluir este link?')) {
-                        firebase.database().ref(`socialLinks/${id}`).remove();
+                        database.ref(`socialLinks/${id}`).remove();
                         socialLink.remove();
                     }
                 });
@@ -933,10 +975,10 @@
             
             if (currentEditingSocialId) {
                 // Update existing link
-                firebase.database().ref(`socialLinks/${currentEditingSocialId}`).update(linkData);
+                database.ref(`socialLinks/${currentEditingSocialId}`).update(linkData);
             } else {
                 // Add new link
-                const newLinkRef = firebase.database().ref('socialLinks').push();
+                const newLinkRef = database.ref('socialLinks').push();
                 newLinkRef.set(linkData);
             }
             
@@ -946,6 +988,11 @@
 
         // Open add project modal
         function openAddProjectModal() {
+            if (!editMode) {
+                passwordModal.style.display = 'flex';
+                return;
+            }
+            
             currentEditingProjectId = null;
             document.getElementById('project-id').value = '';
             document.getElementById('project-name').value = '';
@@ -994,20 +1041,33 @@
             };
             
             if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    projectData.imageUrl = e.target.result;
-                    saveProject(id, projectData);
-                };
-                reader.readAsDataURL(imageFile);
+                const storageRef = storage.ref(`projects/${imageFile.name}`);
+                const uploadTask = storageRef.put(imageFile);
+                
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // Progress monitoring can be added here
+                    }, 
+                    (error) => {
+                        console.error("Upload failed:", error);
+                    }, 
+                    () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            projectData.imageUrl = downloadURL;
+                            saveProject(id, projectData);
+                        });
+                    }
+                );
             } else {
                 // Keep existing image if no new image is uploaded
                 if (currentEditingProjectId) {
-                    firebase.database().ref(`projects/${currentEditingProjectId}/imageUrl`).once('value').then(snapshot => {
+                    database.ref(`projects/${currentEditingProjectId}/imageUrl`).once('value').then(snapshot => {
                         projectData.imageUrl = snapshot.val();
                         saveProject(id, projectData);
                     });
                 } else {
+                    // No image provided for new project
+                    projectData.imageUrl = 'https://via.placeholder.com/300x180?text=Projeto';
                     saveProject(id, projectData);
                 }
             }
@@ -1017,10 +1077,10 @@
         function saveProject(id, projectData) {
             if (id) {
                 // Update existing project
-                firebase.database().ref(`projects/${id}`).update(projectData);
+                database.ref(`projects/${id}`).update(projectData);
             } else {
                 // Add new project
-                const newProjectRef = firebase.database().ref('projects').push();
+                const newProjectRef = database.ref('projects').push();
                 newProjectRef.set(projectData);
             }
             
@@ -1077,18 +1137,19 @@
                 deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
                 deleteBtn.addEventListener('click', () => {
                     if (confirm('Tem certeza que deseja excluir este projeto?')) {
-                        firebase.database().ref(`projects/${id}`).remove();
+                        // Delete image from storage if it's not the placeholder
+                        if (projectData.imageUrl && !projectData.imageUrl.includes('via.placeholder.com')) {
+                            const imageRef = storage.refFromURL(projectData.imageUrl);
+                            imageRef.delete().catch(error => {
+                                console.error("Error deleting image:", error);
+                            });
+                        }
+                        
+                        database.ref(`projects/${id}`).remove();
                         projectCard.remove();
                     }
                 });
                 projectCard.appendChild(deleteBtn);
             }
             
-            projectsContainer.insertBefore(projectCard, addProjectBtn);
-        }
-
-        // Initialize the app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
-</body>
-</html>
+            projectsContainer.insertBefore
