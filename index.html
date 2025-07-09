@@ -215,7 +215,7 @@
         .about-content {
             display: flex;
             flex-wrap: wrap;
-            align-items: center;
+            align-items: flex-start;
             gap: 2rem;
         }
         
@@ -232,11 +232,101 @@
             border-radius: 50%;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             border: 5px solid var(--accent-color);
+            object-fit: cover;
+            aspect-ratio: 1/1;
+        }
+        
+        .skills-logos {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .skill-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            filter: grayscale(30%);
+            transition: all 0.3s ease;
+        }
+        
+        .skill-logo:hover {
+            filter: grayscale(0%);
+            transform: scale(1.1);
         }
         
         .bio {
             flex: 2;
             min-width: 300px;
+            position: relative;
+        }
+        
+        .bio-content {
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+        
+        .show-more-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .show-more-btn:hover {
+            background: #3a86d4;
+        }
+        
+        .expanded-bio {
+            display: none;
+            margin-top: 2rem;
+            position: relative;
+        }
+        
+        .bio-node {
+            background: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            position: relative;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .bio-node h3 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+        
+        .bio-node ul {
+            padding-left: 1.5rem;
+        }
+        
+        .bio-node li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .connections {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .connection-line {
+            position: absolute;
+            background: var(--accent-color);
+            transform-origin: top left;
+            z-index: -1;
         }
         
         h2 {
@@ -502,6 +592,14 @@
             .predefined-images {
                 justify-content: center;
             }
+            
+            .expanded-bio {
+                padding: 1rem;
+            }
+            
+            .bio-node {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
@@ -544,9 +642,52 @@
             <div class="about-content">
                 <div class="profile-img">
                     <img src="" alt="Sua Foto" id="profileImage">
+                    <div class="skills-logos">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Power_bi_logo_black.svg" alt="Power BI" class="skill-logo" title="Power BI">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" alt="Python" class="skill-logo" title="Python">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Sql_data_base_with_logo.png" alt="SQL" class="skill-logo" title="SQL">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg" alt="Excel" class="skill-logo" title="Excel">
+                    </div>
                 </div>
                 <div class="bio">
-                    <p id="aboutText">Carregando...</p>
+                    <div class="bio-content">
+                        <p id="aboutText">Carregando...</p>
+                        <button class="show-more-btn" id="showMoreBtn">Saber Mais</button>
+                    </div>
+                    
+                    <div class="expanded-bio" id="expandedBio">
+                        <div class="bio-node" id="experienceNode">
+                            <h3>Experiência Profissional</h3>
+                            <ul id="experienceList">
+                                <li>Analista de Dados - Empresa XYZ (2020-2023)</li>
+                                <li>Desenvolvedor Python - Empresa ABC (2018-2020)</li>
+                                <li>Estagiário em TI - Empresa 123 (2016-2018)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bio-node" id="coursesNode">
+                            <h3>Cursos e Certificações</h3>
+                            <ul id="coursesList">
+                                <li>Data Science Academy - Big Data Analytics (2022)</li>
+                                <li>Microsoft Certified: Power BI Data Analyst (2021)</li>
+                                <li>Python for Data Science - Udemy (2020)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bio-node" id="skillsNode">
+                            <h3>Habilidades</h3>
+                            <ul id="skillsList">
+                                <li>Análise de Dados e Business Intelligence</li>
+                                <li>Desenvolvimento Python para automação</li>
+                                <li>SQL avançado e modelagem de dados</li>
+                                <li>Visualização de dados com Power BI</li>
+                            </ul>
+                        </div>
+                        
+                        <button class="show-more-btn" id="showLessBtn">Mostrar Menos</button>
+                        
+                        <div class="connections" id="connectionsCanvas"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -621,6 +762,18 @@
             <div class="form-group">
                 <label for="editAbout">Sobre:</label>
                 <textarea id="editAbout" placeholder="Fale sobre você"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="editExperience">Experiência (uma por linha):</label>
+                <textarea id="editExperience" placeholder="Experiência profissional"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="editCourses">Cursos (um por linha):</label>
+                <textarea id="editCourses" placeholder="Cursos e certificações"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="editSkills">Habilidades (uma por linha):</label>
+                <textarea id="editSkills" placeholder="Habilidades técnicas"></textarea>
             </div>
             <div class="loading" id="profileLoading">
                 <div class="loading-spinner"></div>
@@ -746,6 +899,9 @@
         const editName = document.getElementById('editName');
         const editTitle = document.getElementById('editTitle');
         const editAbout = document.getElementById('editAbout');
+        const editExperience = document.getElementById('editExperience');
+        const editCourses = document.getElementById('editCourses');
+        const editSkills = document.getElementById('editSkills');
         const profileImageUpload = document.getElementById('profileImageUpload');
         const profileImageUploadBtn = document.getElementById('profileImageUploadBtn');
         const profileImagePreview = document.getElementById('profileImagePreview');
@@ -778,6 +934,13 @@
         const projectLoading = document.getElementById('projectLoading');
         
         const projectsContainer = document.getElementById('projectsContainer');
+        const showMoreBtn = document.getElementById('showMoreBtn');
+        const showLessBtn = document.getElementById('showLessBtn');
+        const expandedBio = document.getElementById('expandedBio');
+        const experienceList = document.getElementById('experienceList');
+        const coursesList = document.getElementById('coursesList');
+        const skillsList = document.getElementById('skillsList');
+        const connectionsCanvas = document.getElementById('connectionsCanvas');
         
         // Função para selecionar imagem pré-definida
         function selectPredefinedImage(imageSrc, targetElementId) {
@@ -822,6 +985,19 @@
                         document.getElementById('resumeBtn').href = data.social.resume || '#';
                     }
                     
+                    // Experiência, cursos e habilidades
+                    if (data.experience) {
+                        experienceList.innerHTML = data.experience.map(exp => `<li>${exp}</li>`).join('');
+                    }
+                    
+                    if (data.courses) {
+                        coursesList.innerHTML = data.courses.map(course => `<li>${course}</li>`).join('');
+                    }
+                    
+                    if (data.skills) {
+                        skillsList.innerHTML = data.skills.map(skill => `<li>${skill}</li>`).join('');
+                    }
+                    
                     // Projetos
                     if (data.projects && data.projects.length > 0) {
                         renderProjects(data.projects);
@@ -834,6 +1010,22 @@
                         name: 'Seu Nome',
                         title: 'Sua Profissão',
                         about: 'Fale sobre você aqui.',
+                        experience: [
+                            'Analista de Dados - Empresa XYZ (2020-2023)',
+                            'Desenvolvedor Python - Empresa ABC (2018-2020)',
+                            'Estagiário em TI - Empresa 123 (2016-2018)'
+                        ],
+                        courses: [
+                            'Data Science Academy - Big Data Analytics (2022)',
+                            'Microsoft Certified: Power BI Data Analyst (2021)',
+                            'Python for Data Science - Udemy (2020)'
+                        ],
+                        skills: [
+                            'Análise de Dados e Business Intelligence',
+                            'Desenvolvimento Python para automação',
+                            'SQL avançado e modelagem de dados',
+                            'Visualização de dados com Power BI'
+                        ],
                         social: {
                             linkedin: '#',
                             github: '#',
@@ -921,6 +1113,71 @@
             });
         }
         
+        // Desenha as conexões entre os nós
+        function drawConnections() {
+            // Limpa conexões anteriores
+            connectionsCanvas.innerHTML = '';
+            
+            // Obtém as posições dos nós
+            const experienceNode = document.getElementById('experienceNode');
+            const coursesNode = document.getElementById('coursesNode');
+            const skillsNode = document.getElementById('skillsNode');
+            
+            const nodes = [experienceNode, coursesNode, skillsNode];
+            
+            // Conecta todos os nós entre si
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const node1 = nodes[i];
+                    const node2 = nodes[j];
+                    
+                    const rect1 = node1.getBoundingClientRect();
+                    const rect2 = node2.getBoundingClientRect();
+                    
+                    const x1 = rect1.left + rect1.width / 2;
+                    const y1 = rect1.top + rect1.height / 2;
+                    const x2 = rect2.left + rect2.width / 2;
+                    const y2 = rect2.top + rect2.height / 2;
+                    
+                    // Calcula a distância e ângulo entre os nós
+                    const dx = x2 - x1;
+                    const dy = y2 - y1;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                    
+                    // Cria a linha de conexão
+                    const line = document.createElement('div');
+                    line.className = 'connection-line';
+                    line.style.width = `${distance}px`;
+                    line.style.height = '2px';
+                    line.style.left = `${x1}px`;
+                    line.style.top = `${y1}px`;
+                    line.style.transform = `rotate(${angle}deg)`;
+                    line.style.opacity = '0.5';
+                    
+                    connectionsCanvas.appendChild(line);
+                    
+                    // Adiciona animação
+                    setTimeout(() => {
+                        line.style.opacity = '1';
+                        line.style.width = `${distance}px`;
+                    }, 100 * (i + j));
+                }
+            }
+        }
+        
+        // Mostrar/ocultar bio expandida
+        showMoreBtn.addEventListener('click', () => {
+            expandedBio.style.display = 'block';
+            setTimeout(() => {
+                drawConnections();
+            }, 100);
+        });
+        
+        showLessBtn.addEventListener('click', () => {
+            expandedBio.style.display = 'none';
+        });
+        
         // Abre o modal de login
         editPortfolioBtn.addEventListener('click', () => {
             if (isAuthenticated) {
@@ -981,6 +1238,18 @@ Digite o número da opção desejada:`);
                     editTitle.value = data.title || '';
                     editAbout.value = data.about || '';
                     
+                    if (data.experience) {
+                        editExperience.value = data.experience.join('\n');
+                    }
+                    
+                    if (data.courses) {
+                        editCourses.value = data.courses.join('\n');
+                    }
+                    
+                    if (data.skills) {
+                        editSkills.value = data.skills.join('\n');
+                    }
+                    
                     if (data.imageUrl) {
                         profileImagePreview.src = data.imageUrl;
                         profileImagePreview.style.display = 'block';
@@ -1040,6 +1309,9 @@ Digite o número da opção desejada:`);
             const name = editName.value;
             const title = editTitle.value;
             const about = editAbout.value;
+            const experience = editExperience.value.split('\n').filter(line => line.trim() !== '');
+            const courses = editCourses.value.split('\n').filter(line => line.trim() !== '');
+            const skills = editSkills.value.split('\n').filter(line => line.trim() !== '');
             
             if (!name || !title || !about) {
                 alert('Por favor, preencha todos os campos obrigatórios.');
@@ -1069,7 +1341,10 @@ Digite o número da opção desejada:`);
                 const updateData = {
                     name,
                     title,
-                    about
+                    about,
+                    experience,
+                    courses,
+                    skills
                 };
                 
                 if (imageUrl) {
@@ -1337,6 +1612,13 @@ Digite o número da opção desejada:`);
             
             // Carrega os dados do portfólio
             loadPortfolioData();
+            
+            // Redesenha as conexões quando a janela é redimensionada
+            window.addEventListener('resize', () => {
+                if (expandedBio.style.display === 'block') {
+                    drawConnections();
+                }
+            });
         });
     </script>
 </body>
