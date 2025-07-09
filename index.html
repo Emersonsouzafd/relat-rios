@@ -236,25 +236,30 @@
             aspect-ratio: 1/1;
         }
         
-        .skills-logos {
+        .skills-badges {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             margin-top: 20px;
             flex-wrap: wrap;
         }
         
-        .skill-logo {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-            filter: grayscale(30%);
+        .skill-badge {
+            background: var(--dark-gray);
+            color: var(--text-color);
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
+            border: 1px solid var(--medium-gray);
         }
         
-        .skill-logo:hover {
-            filter: grayscale(0%);
-            transform: scale(1.1);
+        .skill-badge:hover {
+            background: var(--medium-gray);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
         
         .bio {
@@ -600,6 +605,10 @@
             .bio-node {
                 padding: 1rem;
             }
+            
+            .skills-badges {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -642,11 +651,11 @@
             <div class="about-content">
                 <div class="profile-img">
                     <img src="" alt="Sua Foto" id="profileImage">
-                    <div class="skills-logos">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Power_bi_logo_black.svg" alt="Power BI" class="skill-logo" title="Power BI">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" alt="Python" class="skill-logo" title="Python">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Sql_data_base_with_logo.png" alt="SQL" class="skill-logo" title="SQL">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg" alt="Excel" class="skill-logo" title="Excel">
+                    <div class="skills-badges">
+                        <div class="skill-badge">Power BI</div>
+                        <div class="skill-badge">Python</div>
+                        <div class="skill-badge">SQL</div>
+                        <div class="skill-badge">Excel</div>
                     </div>
                 </div>
                 <div class="bio">
