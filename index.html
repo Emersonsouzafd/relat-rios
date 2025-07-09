@@ -66,7 +66,6 @@
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
             color: var(--text-light);
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
             position: relative;
             display: inline-block;
         }
@@ -107,13 +106,11 @@
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(78, 154, 241, 0.3);
         }
         
         .edit-btn:hover {
             background: #3a86d4;
             transform: translateY(-2px);
-            box-shadow: 0 0 15px rgba(78, 154, 241, 0.6);
         }
         
         /* Modal de Edição */
@@ -193,12 +190,10 @@
         .btn-primary {
             background: var(--accent-color);
             color: white;
-            box-shadow: 0 0 10px rgba(78, 154, 241, 0.3);
         }
         
         .btn-primary:hover {
             background: #3a86d4;
-            box-shadow: 0 0 15px rgba(78, 154, 241, 0.6);
         }
         
         .btn-secondary {
@@ -275,7 +270,6 @@
         
         .project-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(78, 154, 241, 0.2);
         }
         
         .project-img {
@@ -362,26 +356,10 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 10px rgba(78, 154, 241, 0.5);
-        }
-        
-        .social-btn::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3));
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
         }
         
         .social-btn:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 0 20px rgba(78, 154, 241, 0.8);
-        }
-        
-        .social-btn:hover::before {
-            transform: translateX(100%);
+            transform: translateY(-3px);
         }
         
         .social-btn.linkedin { background: #0077B5; }
