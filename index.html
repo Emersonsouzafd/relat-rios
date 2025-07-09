@@ -452,6 +452,29 @@
         .upload-btn:hover {
             background: #5a6a7a;
         }
+
+        /* Predefined Images */
+        .predefined-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .predefined-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 2px solid var(--medium-gray);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .predefined-image:hover {
+            border-color: var(--accent-color);
+            transform: scale(1.05);
+        }
         
         /* Loading */
         .loading {
@@ -496,6 +519,10 @@
             
             .social-buttons {
                 gap: 1rem;
+            }
+
+            .predefined-images {
+                justify-content: center;
             }
         }
     </style>
@@ -608,6 +635,10 @@
                 <button class="upload-btn" id="profileImageUploadBtn">Escolher Imagem</button>
                 <span class="error-message" id="profileImageError"></span>
                 <img id="profileImagePreview" class="image-preview" src="" alt="Pré-visualização">
+                
+                <div class="predefined-images">
+                    <img src="fotoemerson.jpeg" alt="Foto Emerson" class="predefined-image" onclick="selectPredefinedImage('fotoemerson.jpeg', 'profileImagePreview')">
+                </div>
             </div>
             <div class="form-group">
                 <label for="editAbout">Sobre:</label>
@@ -673,6 +704,14 @@
                 <button class="upload-btn" id="projectImageUploadBtn">Escolher Imagem</button>
                 <span class="error-message" id="projectImageError"></span>
                 <img id="projectImagePreview" class="image-preview" src="" alt="Pré-visualização">
+                
+                <div class="predefined-images">
+                    <img src="empresa1.jpeg" alt="Empresa 1" class="predefined-image" onclick="selectPredefinedImage('empresa1.jpeg', 'projectImagePreview')">
+                    <img src="empresa2.webp" alt="Empresa 2" class="predefined-image" onclick="selectPredefinedImage('empresa2.webp', 'projectImagePreview')">
+                    <img src="empresa3.jpg" alt="Empresa 3" class="predefined-image" onclick="selectPredefinedImage('empresa3.jpg', 'projectImagePreview')">
+                    <img src="empresa4.jpg" alt="Empresa 4" class="predefined-image" onclick="selectPredefinedImage('empresa4.jpg', 'projectImagePreview')">
+                    <img src="empresa5.jpg" alt="Empresa 5" class="predefined-image" onclick="selectPredefinedImage('empresa5.jpg', 'projectImagePreview')">
+                </div>
             </div>
             <div class="form-group">
                 <label for="projectLink">Link do Projeto:</label>
@@ -761,6 +800,22 @@
         const projectLoading = document.getElementById('projectLoading');
         
         const projectsContainer = document.getElementById('projectsContainer');
+        
+        // Função para selecionar imagem pré-definida
+        function selectPredefinedImage(imageSrc, targetElementId) {
+            const targetElement = document.getElementById(targetElementId);
+            targetElement.src = imageSrc;
+            targetElement.style.display = 'block';
+            
+            // Limpa o arquivo selecionado se houver
+            if (targetElementId === 'profileImagePreview') {
+                profileImageFile = null;
+                profileImageUpload.value = '';
+            } else if (targetElementId === 'projectImagePreview') {
+                projectImageFile = null;
+                projectImageUpload.value = '';
+            }
+        }
         
         // Carrega os dados do portfólio
         function loadPortfolioData() {
@@ -1027,6 +1082,9 @@ Digite o número da opção desejada:`);
                 } else if (profileImagePreview.src && profileImagePreview.src.includes('http')) {
                     // Mantém a imagem existente se não foi alterada
                     imageUrl = profileImagePreview.src;
+                } else if (profileImagePreview.src && profileImagePreview.src.includes('fotoemerson.jpeg')) {
+                    // Usa a imagem pré-definida
+                    imageUrl = 'fotoemerson.jpeg';
                 }
                 
                 // Atualiza os dados no Firestore
@@ -1212,6 +1270,15 @@ Digite o número da opção desejada:`);
                     imageUrl = await snapshot.ref.getDownloadURL();
                 } else if (projectImagePreview.src && projectImagePreview.src.includes('http')) {
                     // Mantém a imagem existente se não foi alterada
+                    imageUrl = projectImagePreview.src;
+                } else if (projectImagePreview.src && (
+                    projectImagePreview.src.includes('empresa1.jpeg') || 
+                    projectImagePreview.src.includes('empresa2.webp') ||
+                    projectImagePreview.src.includes('empresa3.jpg') ||
+                    projectImagePreview.src.includes('empresa4.jpg') ||
+                    projectImagePreview.src.includes('empresa5.jpg')
+                )) {
+                    // Usa a imagem pré-definida
                     imageUrl = projectImagePreview.src;
                 }
                 
