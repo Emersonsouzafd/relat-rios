@@ -12,15 +12,15 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #7f8c8d;
-            --accent-color: #3498db;
-            --light-gray: #ecf0f1;
-            --medium-gray: #bdc3c7;
-            --dark-gray: #34495e;
-            --silver: #bdc3c7;
-            --text-color: #333;
-            --text-light: #ecf0f1;
+            --primary-color: #121212;
+            --secondary-color: #2a2a2a;
+            --accent-color: #4e9af1;
+            --light-gray: #1e1e1e;
+            --medium-gray: #3d3d3d;
+            --dark-gray: #0a0a0a;
+            --silver: #e0e0e0;
+            --text-color: #f5f5f5;
+            --text-light: #ffffff;
         }
         
         * {
@@ -31,18 +31,29 @@
         }
         
         body {
-            background-color: var(--light-gray);
+            background-color: var(--primary-color);
             color: var(--text-color);
             line-height: 1.6;
         }
         
-        /* Cabeçalho */
+        /* Cabeçalho com efeito xadrez */
         header {
-            background: linear-gradient(135deg, var(--dark-gray) 0%, var(--primary-color) 100%);
+            background: 
+                linear-gradient(135deg, 
+                    rgba(10, 10, 10, 0.9) 0%, 
+                    rgba(20, 20, 20, 0.9) 100%),
+                repeating-linear-gradient(
+                    45deg,
+                    var(--dark-gray),
+                    var(--dark-gray) 10px,
+                    #1a1a1a 10px,
+                    #1a1a1a 20px
+                );
             color: var(--text-light);
             padding: 2rem 0;
             text-align: center;
             position: relative;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
         
         .container {
@@ -55,6 +66,25 @@
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
             color: var(--text-light);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        header:hover h1::after {
+            transform: scaleX(1);
         }
         
         .subtitle {
@@ -77,11 +107,13 @@
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(78, 154, 241, 0.3);
         }
         
         .edit-btn:hover {
-            background: #2980b9;
+            background: #3a86d4;
             transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(78, 154, 241, 0.6);
         }
         
         /* Modal de Edição */
@@ -99,7 +131,7 @@
         }
         
         .modal-content {
-            background: white;
+            background: var(--secondary-color);
             padding: 2rem;
             border-radius: 8px;
             width: 90%;
@@ -107,11 +139,13 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             max-height: 90vh;
             overflow-y: auto;
+            border: 1px solid var(--accent-color);
+            color: var(--text-color);
         }
         
         .modal h2 {
             margin-bottom: 1.5rem;
-            color: var(--primary-color);
+            color: var(--accent-color);
         }
         
         .form-group {
@@ -132,6 +166,8 @@
             border: 1px solid var(--medium-gray);
             border-radius: 4px;
             font-size: 1rem;
+            background-color: var(--primary-color);
+            color: var(--text-color);
         }
         
         .form-group textarea {
@@ -157,10 +193,12 @@
         .btn-primary {
             background: var(--accent-color);
             color: white;
+            box-shadow: 0 0 10px rgba(78, 154, 241, 0.3);
         }
         
         .btn-primary:hover {
-            background: #2980b9;
+            background: #3a86d4;
+            box-shadow: 0 0 15px rgba(78, 154, 241, 0.6);
         }
         
         .btn-secondary {
@@ -169,13 +207,14 @@
         }
         
         .btn-secondary:hover {
-            background: #95a5a6;
+            background: #5a6a7a;
         }
         
         /* Seção Sobre */
         #about {
             padding: 3rem 0;
-            background-color: white;
+            background-color: var(--secondary-color);
+            border-bottom: 1px solid var(--medium-gray);
         }
         
         .about-content {
@@ -196,8 +235,8 @@
             width: 100%;
             max-width: 350px;
             border-radius: 50%;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 5px solid var(--silver);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 5px solid var(--accent-color);
         }
         
         .bio {
@@ -208,13 +247,13 @@
         h2 {
             font-size: 2rem;
             margin-bottom: 1.5rem;
-            color: var(--primary-color);
+            color: var(--accent-color);
         }
         
         /* Seção Projetos */
         #projects {
             padding: 3rem 0;
-            background-color: var(--light-gray);
+            background-color: var(--primary-color);
         }
         
         .projects-grid {
@@ -225,17 +264,18 @@
         }
         
         .project-card {
-            background: white;
+            background: var(--secondary-color);
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
             position: relative;
+            border: 1px solid var(--medium-gray);
         }
         
         .project-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 25px rgba(78, 154, 241, 0.2);
         }
         
         .project-img {
@@ -260,12 +300,12 @@
         
         .project-info h3 {
             margin-bottom: 0.5rem;
-            color: var(--primary-color);
+            color: var(--accent-color);
         }
         
         .project-info p {
             margin-bottom: 1rem;
-            color: var(--secondary-color);
+            color: var(--silver);
         }
         
         .project-actions {
@@ -322,7 +362,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 0 10px rgba(78, 154, 241, 0.5);
         }
         
         .social-btn::before {
@@ -336,8 +376,8 @@
         }
         
         .social-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 0 20px rgba(78, 154, 241, 0.8);
         }
         
         .social-btn:hover::before {
@@ -370,8 +410,9 @@
         /* Seção Contato */
         #contact {
             padding: 3rem 0;
-            background-color: white;
+            background-color: var(--secondary-color);
             text-align: center;
+            border-top: 1px solid var(--medium-gray);
         }
         
         /* Rodapé */
@@ -380,6 +421,7 @@
             color: var(--text-light);
             text-align: center;
             padding: 1.5rem 0;
+            border-top: 1px solid var(--accent-color);
         }
         
         /* Upload de Imagem */
@@ -408,7 +450,7 @@
         }
         
         .upload-btn:hover {
-            background: #95a5a6;
+            background: #5a6a7a;
         }
         
         /* Loading */
@@ -431,6 +473,14 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        
+        /* Mensagens de erro */
+        .error-message {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
         }
         
         /* Responsividade */
@@ -556,6 +606,7 @@
                 <label>Foto de Perfil:</label>
                 <input type="file" id="profileImageUpload" accept="image/*" style="display: none;">
                 <button class="upload-btn" id="profileImageUploadBtn">Escolher Imagem</button>
+                <span class="error-message" id="profileImageError"></span>
                 <img id="profileImagePreview" class="image-preview" src="" alt="Pré-visualização">
             </div>
             <div class="form-group">
@@ -620,6 +671,7 @@
                 <label>Imagem do Projeto:</label>
                 <input type="file" id="projectImageUpload" accept="image/*" style="display: none;">
                 <button class="upload-btn" id="projectImageUploadBtn">Escolher Imagem</button>
+                <span class="error-message" id="projectImageError"></span>
                 <img id="projectImagePreview" class="image-preview" src="" alt="Pré-visualização">
             </div>
             <div class="form-group">
@@ -680,6 +732,7 @@
         const profileImageUpload = document.getElementById('profileImageUpload');
         const profileImageUploadBtn = document.getElementById('profileImageUploadBtn');
         const profileImagePreview = document.getElementById('profileImagePreview');
+        const profileImageError = document.getElementById('profileImageError');
         const cancelProfileEditBtn = document.getElementById('cancelProfileEditBtn');
         const saveProfileBtn = document.getElementById('saveProfileBtn');
         const profileLoading = document.getElementById('profileLoading');
@@ -700,6 +753,7 @@
         const projectImageUpload = document.getElementById('projectImageUpload');
         const projectImageUploadBtn = document.getElementById('projectImageUploadBtn');
         const projectImagePreview = document.getElementById('projectImagePreview');
+        const projectImageError = document.getElementById('projectImageError');
         const projectLink = document.getElementById('projectLink');
         const projectIndex = document.getElementById('projectIndex');
         const cancelProjectBtn = document.getElementById('cancelProjectBtn');
@@ -805,7 +859,7 @@
                 addProjectCard.className = 'project-card add-project-card';
                 addProjectCard.innerHTML = `
                     <div style="height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                        <i class="fas fa-plus" style="font-size: 3rem; color: var(--medium-gray);"></i>
+                        <i class="fas fa-plus" style="font-size: 3rem; color: var(--accent-color);"></i>
                     </div>
                 `;
                 addProjectCard.addEventListener('click', () => {
@@ -854,8 +908,8 @@
         confirmLoginBtn.addEventListener('click', () => {
             const password = passwordInput.value;
             
-            // Autenticação simples com senha fixa (em produção, use Firebase Authentication)
-            if (password === '123') {
+            // Autenticação com a nova senha
+            if (password === 'Crossfile14@') {
                 isAuthenticated = true;
                 loginModal.style.display = 'none';
                 passwordInput.value = '';
@@ -912,6 +966,23 @@ Digite o número da opção desejada:`);
         profileImageUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
+                // Validação do tipo de arquivo
+                if (!file.type.match('image.*')) {
+                    profileImageError.textContent = 'Por favor, selecione um arquivo de imagem (JPEG, PNG, etc.)';
+                    profileImageError.style.display = 'block';
+                    return;
+                }
+                
+                // Validação do tamanho do arquivo (máximo 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    profileImageError.textContent = 'A imagem deve ter no máximo 5MB';
+                    profileImageError.style.display = 'block';
+                    return;
+                }
+                
+                // Limpa mensagens de erro
+                profileImageError.style.display = 'none';
+                
                 profileImageFile = file;
                 const reader = new FileReader();
                 reader.onload = (event) => {
@@ -928,6 +999,7 @@ Digite o número da opção desejada:`);
             profileImageFile = null;
             profileImagePreview.src = '';
             profileImagePreview.style.display = 'none';
+            profileImageError.style.display = 'none';
         });
         
         // Salva as alterações do perfil
@@ -1068,6 +1140,7 @@ Digite o número da opção desejada:`);
             }
             
             projectImageFile = null;
+            projectImageError.style.display = 'none';
             editProjectModal.style.display = 'flex';
         }
         
@@ -1079,6 +1152,23 @@ Digite o número da opção desejada:`);
         projectImageUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
+                // Validação do tipo de arquivo
+                if (!file.type.match('image.*')) {
+                    projectImageError.textContent = 'Por favor, selecione um arquivo de imagem (JPEG, PNG, etc.)';
+                    projectImageError.style.display = 'block';
+                    return;
+                }
+                
+                // Validação do tamanho do arquivo (máximo 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    projectImageError.textContent = 'A imagem deve ter no máximo 5MB';
+                    projectImageError.style.display = 'block';
+                    return;
+                }
+                
+                // Limpa mensagens de erro
+                projectImageError.style.display = 'none';
+                
                 projectImageFile = file;
                 const reader = new FileReader();
                 reader.onload = (event) => {
@@ -1095,6 +1185,7 @@ Digite o número da opção desejada:`);
             projectImageFile = null;
             projectImagePreview.src = '';
             projectImagePreview.style.display = 'none';
+            projectImageError.style.display = 'none';
         });
         
         // Salva as alterações do projeto
