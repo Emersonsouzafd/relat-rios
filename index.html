@@ -565,7 +565,7 @@
             <h2>Sobre Mim</h2>
             <div class="about-content">
                 <div class="profile-img">
-                    <img src="" alt="Sua Foto" id="profileImage">
+                    <img src="imagens/perfil/fotoemerson.jpeg" alt="Sua Foto" id="profileImage">
                 </div>
                 <div class="bio">
                     <p id="aboutText">Carregando...</p>
@@ -637,7 +637,8 @@
                 <img id="profileImagePreview" class="image-preview" src="" alt="Pré-visualização">
                 
                 <div class="predefined-images">
-                    <img src="fotoemerson.jpeg" alt="Foto Emerson" class="predefined-image" onclick="selectPredefinedImage('fotoemerson.jpeg', 'profileImagePreview')">
+                    <img src="imagens/perfil/fotoemerson.jpeg" alt="Foto Emerson" class="predefined-image" onclick="selectPredefinedImage('imagens/perfil/fotoemerson.jpeg', 'profileImagePreview')">
+                    <!-- Adicione mais fotos aqui -->
                 </div>
             </div>
             <div class="form-group">
@@ -706,11 +707,11 @@
                 <img id="projectImagePreview" class="image-preview" src="" alt="Pré-visualização">
                 
                 <div class="predefined-images">
-                    <img src="empresa1.jpeg" alt="Empresa 1" class="predefined-image" onclick="selectPredefinedImage('empresa1.jpeg', 'projectImagePreview')">
-                    <img src="empresa2.webp" alt="Empresa 2" class="predefined-image" onclick="selectPredefinedImage('empresa2.webp', 'projectImagePreview')">
-                    <img src="empresa3.jpg" alt="Empresa 3" class="predefined-image" onclick="selectPredefinedImage('empresa3.jpg', 'projectImagePreview')">
-                    <img src="empresa4.jpg" alt="Empresa 4" class="predefined-image" onclick="selectPredefinedImage('empresa4.jpg', 'projectImagePreview')">
-                    <img src="empresa5.jpg" alt="Empresa 5" class="predefined-image" onclick="selectPredefinedImage('empresa5.jpg', 'projectImagePreview')">
+                    <img src="imagens/projetos/empresa1.jpeg" alt="Empresa 1" class="predefined-image" onclick="selectPredefinedImage('imagens/projetos/empresa1.jpeg', 'projectImagePreview')">
+                    <img src="imagens/projetos/empresa2.webp" alt="Empresa 2" class="predefined-image" onclick="selectPredefinedImage('imagens/projetos/empresa2.webp', 'projectImagePreview')">
+                    <img src="imagens/projetos/empresa3.jpg" alt="Empresa 3" class="predefined-image" onclick="selectPredefinedImage('imagens/projetos/empresa3.jpg', 'projectImagePreview')">
+                    <img src="imagens/projetos/empresa4.jpg" alt="Empresa 4" class="predefined-image" onclick="selectPredefinedImage('imagens/projetos/empresa4.jpg', 'projectImagePreview')">
+                    <img src="imagens/projetos/empresa5.jpg" alt="Empresa 5" class="predefined-image" onclick="selectPredefinedImage('imagens/projetos/empresa5.jpg', 'projectImagePreview')">
                 </div>
             </div>
             <div class="form-group">
@@ -802,12 +803,11 @@
         const projectsContainer = document.getElementById('projectsContainer');
         
         // Função para selecionar imagem pré-definida
-        function selectPredefinedImage(imageSrc, targetElementId) {
+        function selectPredefinedImage(imagePath, targetElementId) {
             const targetElement = document.getElementById(targetElementId);
-            targetElement.src = imageSrc;
+            targetElement.src = imagePath;
             targetElement.style.display = 'block';
             
-            // Limpa o arquivo selecionado se houver
             if (targetElementId === 'profileImagePreview') {
                 profileImageFile = null;
                 profileImageUpload.value = '';
@@ -831,9 +831,13 @@
                     
                     // Foto de perfil
                     if (data.imageUrl) {
-                        document.getElementById('profileImage').src = data.imageUrl;
+                        if (data.imageUrl.startsWith('imagens/')) {
+                            document.getElementById('profileImage').src = data.imageUrl;
+                        } else {
+                            document.getElementById('profileImage').src = data.imageUrl;
+                        }
                     } else {
-                        document.getElementById('profileImage').src = 'https://via.placeholder.com/350';
+                        document.getElementById('profileImage').src = 'imagens/perfil/fotoemerson.jpeg';
                     }
                     
                     // Links sociais
@@ -856,6 +860,7 @@
                         name: 'Seu Nome',
                         title: 'Sua Profissão',
                         about: 'Fale sobre você aqui.',
+                        imageUrl: 'imagens/perfil/fotoemerson.jpeg',
                         social: {
                             linkedin: '#',
                             github: '#',
@@ -887,7 +892,7 @@
                 projectCard.className = 'project-card';
                 projectCard.innerHTML = `
                     <div class="project-img">
-                        <img src="${project.imageUrl || 'https://via.placeholder.com/400x200'}" alt="${project.title}">
+                        <img src="${project.imageUrl || 'imagens/projetos/empresa1.jpeg'}" alt="${project.title}">
                     </div>
                     <div class="project-info">
                         <h3>${project.title}</h3>
@@ -963,7 +968,6 @@
         confirmLoginBtn.addEventListener('click', () => {
             const password = passwordInput.value;
             
-            // Autenticação com a nova senha
             if (password === 'Crossfile14@') {
                 isAuthenticated = true;
                 loginModal.style.display = 'none';
@@ -1074,17 +1078,19 @@ Digite o número da opção desejada:`);
             try {
                 let imageUrl = '';
                 
-                // Se uma nova imagem foi selecionada, faz upload
-                if (profileImageFile) {
+                // Se for uma imagem local
+                if (profileImagePreview.src.includes('imagens/')) {
+                    imageUrl = profileImagePreview.src;
+                } 
+                // Se foi feito upload de nova imagem
+                else if (profileImageFile) {
                     const storageRef = storage.ref(`profile_images/${Date.now()}_${profileImageFile.name}`);
                     const snapshot = await storageRef.put(profileImageFile);
                     imageUrl = await snapshot.ref.getDownloadURL();
-                } else if (profileImagePreview.src && profileImagePreview.src.includes('http')) {
-                    // Mantém a imagem existente se não foi alterada
+                }
+                // Se não foi alterada a imagem
+                else if (profileImagePreview.src) {
                     imageUrl = profileImagePreview.src;
-                } else if (profileImagePreview.src && profileImagePreview.src.includes('fotoemerson.jpeg')) {
-                    // Usa a imagem pré-definida
-                    imageUrl = 'fotoemerson.jpeg';
                 }
                 
                 // Atualiza os dados no Firestore
@@ -1263,22 +1269,18 @@ Digite o número da opção desejada:`);
             try {
                 let imageUrl = '';
                 
-                // Se uma nova imagem foi selecionada, faz upload
-                if (projectImageFile) {
+                // Se for uma imagem local
+                if (projectImagePreview.src.includes('imagens/')) {
+                    imageUrl = projectImagePreview.src;
+                } 
+                // Se foi feito upload de nova imagem
+                else if (projectImageFile) {
                     const storageRef = storage.ref(`project_images/${Date.now()}_${projectImageFile.name}`);
                     const snapshot = await storageRef.put(projectImageFile);
                     imageUrl = await snapshot.ref.getDownloadURL();
-                } else if (projectImagePreview.src && projectImagePreview.src.includes('http')) {
-                    // Mantém a imagem existente se não foi alterada
-                    imageUrl = projectImagePreview.src;
-                } else if (projectImagePreview.src && (
-                    projectImagePreview.src.includes('empresa1.jpeg') || 
-                    projectImagePreview.src.includes('empresa2.webp') ||
-                    projectImagePreview.src.includes('empresa3.jpg') ||
-                    projectImagePreview.src.includes('empresa4.jpg') ||
-                    projectImagePreview.src.includes('empresa5.jpg')
-                )) {
-                    // Usa a imagem pré-definida
+                }
+                // Se não foi alterada a imagem
+                else if (projectImagePreview.src) {
                     imageUrl = projectImagePreview.src;
                 }
                 
